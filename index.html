@@ -1029,8 +1029,8 @@
         <span data-i18n="legend_voice">青色: 语音回声</span>
         <span style="color: var(--blue-text); margin-left: 0.4rem;">●</span>
         <span data-i18n="legend_text">蓝色: 文字留言</span>
-        <span style="color: var(--gold-sun); margin-left: 0.4rem;">◎</span>
-        <span data-i18n="legend_sun">金色波纹: 太阳直射中心</span>
+        <span style="color: var(--gold-sun); margin-left: 0.4rem;">☀️</span>
+        <span data-i18n="legend_sun">昼夜晨昏线: 实时光影融合</span>
       </div>
     </div>
 
@@ -1251,7 +1251,7 @@
         filter_night_only: "夜幕低垂",
         legend_voice: "青色: 语音回声",
         legend_text: "蓝色: 文字留言",
-        legend_sun: "金色波纹: 太阳直射中心",
+        legend_sun: "昼夜晨昏线: 实时光影融合",
         world_mood_title: "🌦️ 世界情绪天气 (World Mood)",
         mood_summary: "全站共计 {count} 缕心声",
         composer_title: "📡 发射回声 (Broadcast)",
@@ -1324,7 +1324,7 @@
         filter_night_only: "In Night",
         legend_voice: "Cyan: Voice Echo",
         legend_text: "Blue: Text Echo",
-        legend_sun: "Gold Wave: Direct Sunlight Center",
+        legend_sun: "Terminator Line: Real-Time Day/Night Fusion",
         world_mood_title: "🌦️ World Mood Weather",
         mood_summary: "{count} global voices collected",
         composer_title: "📡 Broadcast Echo",
@@ -1397,7 +1397,7 @@
         filter_night_only: "夜の国",
         legend_voice: "シアン: 音声エコー",
         legend_text: "ブルー: テキスト投稿",
-        legend_sun: "金色波紋: 太陽直射点",
+        legend_sun: "昼夜晨昏線: リアルタイム光影融合",
         world_mood_title: "🌦️ 世界の心の天気 (World Mood)",
         mood_summary: "世界中から {count} 件の心声",
         composer_title: "📡 エコーを発信 (Broadcast)",
@@ -1470,7 +1470,7 @@
         filter_night_only: "밤 시간대 국가",
         legend_voice: "청록색: 음성 에코",
         legend_text: "파란색: 텍스트 에코",
-        legend_sun: "황금색 파동: 태양 직사 위치",
+        legend_sun: "주야간 경계선: 실시간 빛과 그림자 융합",
         world_mood_title: "🌦️ 세계 감정 날씨 (World Mood)",
         mood_summary: "전 세계 {count}개의 마음의 소리",
         composer_title: "📡 에코 송출 (Broadcast)",
@@ -1543,7 +1543,7 @@
         filter_night_only: "Países de Noche",
         legend_voice: "Cian: Eco de Voz",
         legend_text: "Azul: Mensaje de Texto",
-        legend_sun: "Onda Dorada: Centro Luz Solar",
+        legend_sun: "Línea Terminador: Fusión Día/Noche en Vivo",
         world_mood_title: "🌦️ Clima Emocional Global",
         mood_summary: "{count} voces mundiales registradas",
         composer_title: "📡 Transmitir Eco (Broadcast)",
@@ -1616,7 +1616,7 @@
         filter_night_only: "Dans la Nuit",
         legend_voice: "Cyan: Écho Vocal",
         legend_text: "Bleu: Message Texte",
-        legend_sun: "Onde Dorée: Plein Soleil Direct",
+        legend_sun: "Ligne Terminateur: Fusion Jour/Nuit en Direct",
         world_mood_title: "🌦️ Météo Émotionnelle Mondiale",
         mood_summary: "{count} voix planétaires recueillies",
         composer_title: "📡 Émettre un Écho",
@@ -1689,7 +1689,7 @@
         filter_night_only: "Länder in der Nacht",
         legend_voice: "Türkis: Sprach-Echo",
         legend_text: "Blau: Text-Nachricht",
-        legend_sun: "Goldene Welle: Sonnenzenit",
+        legend_sun: "Tag-Nacht-Grenze: Echtzeit-Lichtfusion",
         world_mood_title: "🌦️ Welt-Stimmungswetter",
         mood_summary: "{count} weltweite Stimmen erfasst",
         composer_title: "📡 Echo senden (Broadcast)",
@@ -1762,7 +1762,7 @@
         filter_night_only: "Страны в ночи",
         legend_voice: "Бирюзовый: Голосовое эхо",
         legend_text: "Синий: Текстовое эхо",
-        legend_sun: "Золотая волна: Зенит Солнца",
+        legend_sun: "Линия терминатора: Слияние дня и ночи",
         world_mood_title: "🌦️ Мировая погода настроения",
         mood_summary: "Собрано {count} голосов планеты",
         composer_title: "📡 Отправить Эхо (Broadcast)",
@@ -1835,7 +1835,7 @@
         filter_night_only: "دول في الليل",
         legend_voice: "سماوي: صدى صوتي",
         legend_text: "أزرق: رسالة نصية",
-        legend_sun: "موجة ذهبية: مركز الشمس",
+        legend_sun: "خط الشفق: دمج الضوء والليل المباشر",
         world_mood_title: "🌦️ طقس المشاعر العالمية",
         mood_summary: "تم جمع {count} نبضة صوتية",
         composer_title: "📡 إرسال الصدى (Broadcast)",
@@ -1968,6 +1968,7 @@
       mediaRecorder: null,
       recordTimerInterval: null,
       globe: null,
+      globeMaterial: null,
       currentPlayingAudio: null,
       reportingPostId: null,
       commentingPostId: null,
@@ -2139,6 +2140,7 @@
       document.getElementById("day-country-count").textContent = dayCount;
       document.getElementById("night-country-count").textContent = nightCount;
       updateSolarInfoBar();
+      updateSunDirectionShader();
     }
 
     function updateSolarInfoBar() {
@@ -2198,14 +2200,73 @@
       }
     }
 
-    // ================= 2. 3D 地球初始化 (Globe.gl) =================
+    // ================= 2. 3D 地球初始化与昼夜晨昏线着色器 (Globe.gl + ShaderMaterial) =================
     function initGlobe() {
       const container = document.getElementById("globe-container");
+
+      // 1. 加载白昼地球与夜间城市灯光双贴图
+      const textureLoader = new THREE.TextureLoader();
+      const dayTexture = textureLoader.load("https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg");
+      const nightTexture = textureLoader.load("https://unpkg.com/three-globe/example/img/earth-night.jpg");
+
+      // 2. 自定义昼夜晨昏线着色器 (Day/Night Terminator Shader)
+      const globeMaterial = new THREE.ShaderMaterial({
+        uniforms: {
+          dayTexture: { value: dayTexture },
+          nightTexture: { value: nightTexture },
+          uSunDir: { value: new THREE.Vector3(1, 0, 0) },
+        },
+        vertexShader: `
+          varying vec2 vUv;
+          varying vec3 vNormal;
+
+          void main() {
+            vUv = uv;
+            vNormal = normalize(normal);
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: `
+          uniform sampler2D dayTexture;
+          uniform sampler2D nightTexture;
+          uniform vec3 uSunDir;
+          varying vec2 vUv;
+          varying vec3 vNormal;
+
+          void main() {
+            vec3 norm = normalize(vNormal);
+            // 计算表面法线与太阳方向点积
+            float dotProduct = dot(norm, uSunDir);
+
+            // 晨昏线平滑过渡 [-0.15, 0.15]
+            float t = smoothstep(-0.15, 0.15, dotProduct);
+
+            vec4 dayColor = texture2D(dayTexture, vUv);
+            vec4 nightColor = texture2D(nightTexture, vUv);
+
+            // 夜晚城市灯光增强 1.4 倍对比度
+            vec3 enhancedNight = nightColor.rgb * 1.4;
+
+            // 昼夜基础融合
+            vec3 mixedColor = mix(enhancedNight, dayColor.rgb, t);
+
+            // 晨昏交界处叠加温暖晚霞橙光散射
+            float twilight = (1.0 - smoothstep(0.0, 0.15, abs(dotProduct))) * 0.35;
+            vec3 sunsetGlow = vec3(1.0, 0.45, 0.12) * twilight;
+
+            gl_FragColor = vec4(mixedColor + sunsetGlow, 1.0);
+          }
+        `
+      });
+
+      state.globeMaterial = globeMaterial;
+
+      // 3. 构建 3D 地球并赋给自定义 globeMaterial
       const globe = Globe()(container)
-        .globeImageUrl("https://unpkg.com/three-globe@2.30.0/example/img/earth-night.jpg")
-        .bumpImageUrl("https://unpkg.com/three-globe@2.30.0/example/img/earth-topology.png")
+        .globeMaterial(globeMaterial)
         .backgroundImageUrl("https://unpkg.com/three-globe@2.30.0/example/img/night-sky.png")
-        .atmosphereColor("#00e5ff")
+        .showAtmosphere(true)
+        .atmosphereColor("#40c4ff")
         .atmosphereAltitude(0.18)
         .pointOfView({ lat: 20, lng: 110, altitude: 2.2 });
 
@@ -2241,26 +2302,18 @@
         globe.height(container.clientHeight);
       });
 
-      // 更新太阳直射光圈波纹 (Golden Solar Rings)
-      updateSolarRings();
+      // 初始同步太阳方向向量至着色器
+      updateSunDirectionShader();
     }
 
-    function updateSolarRings() {
-      if (!state.globe) return;
+    function updateSunDirectionShader() {
+      if (!state.globe || !state.globeMaterial) return;
       const sun = state.sunPosition;
-      state.globe.ringsData([
-        {
-          lat: sun.lat,
-          lng: sun.lng,
-          maxR: 20,
-          propagationSpeed: 2.5,
-          repeatPeriod: 1400,
-        }
-      ])
-      .ringColor(() => (t) => `rgba(255, 215, 0, ${1 - t})`)
-      .ringMaxRadius("maxR")
-      .ringPropagationSpeed("propagationSpeed")
-      .ringRepeatPeriod("repeatPeriod");
+      // 利用 globe.getCoords 将太阳经纬度转换为 3D 空间坐标向量并归一化
+      const coords = state.globe.getCoords(sun.lat, sun.lng, 1);
+      if (coords) {
+        state.globeMaterial.uniforms.uSunDir.value.set(coords.x, coords.y, coords.z).normalize();
+      }
     }
 
     // 更新 3D 地球上的光柱数据（融合昼夜与内容类型）
@@ -2275,11 +2328,10 @@
         const voices = item.voices || 0;
         const diurnal = state.countryDayNightMap[cCode] || { isDay: true, status: "day", alt: "0", localTimeStr: "--:--" };
         
-        // 高度与颜色计算
+        // 高度与颜色计算：确保在白昼蔚蓝地球与黑夜城市灯光下均清晰可见
         const altitude = Math.min(0.08 + total * 0.04, 0.65);
-        // 白天带有金色辉光，夜晚带有深空青蓝
-        let color = voices > 0 ? "#00e5ff" : "#2979ff";
-        if (diurnal.status === "day" && voices > 0) color = "#ffd700";
+        let color = voices > 0 ? "#00e5ff" : "#00b0ff";
+        if (diurnal.status === "day" && voices > 0) color = "#00e5ff";
 
         pointsData.push({
           code: cCode,
@@ -2299,7 +2351,8 @@
         .pointsData(pointsData)
         .pointAltitude("altitude")
         .pointColor("color")
-        .pointRadius(1.2)
+        .pointRadius(1.4)
+        .pointResolution(16)
         .pointLabel(d => `
           <div style="background: rgba(6,11,22,0.95); border: 1px solid ${d.diurnal.isDay ? '#ffd700' : '#00e5ff'}; padding: 8px 12px; border-radius: 8px; font-size: 12px; color: #fff;">
             <strong>${d.flag} ${d.name} (${d.code})</strong><br/>
@@ -3019,7 +3072,7 @@
 
     document.getElementById("btn-refresh-stream").addEventListener("click", () => {
       refreshDiurnalStatus();
-      updateSolarRings();
+      updateSunDirectionShader();
       loadEchoStream();
       showToast("已刷新回声流与昼夜天象");
     });
@@ -3049,10 +3102,10 @@
       initGlobe();
       loadEchoStream();
 
-      // 每 60 秒自动更新一次太阳直射点与各区域昼夜状态
+      // 每 60 秒自动更新一次太阳直射点与昼夜着色器
       setInterval(() => {
         refreshDiurnalStatus();
-        updateSolarRings();
+        updateSunDirectionShader();
       }, 60000);
     });
   </script>
