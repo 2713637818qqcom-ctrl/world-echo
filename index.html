@@ -2462,6 +2462,7 @@
       document.getElementById("night-country-count").textContent = nightCount;
       updateSolarInfoBar();
       updateSunDirectionShader();
+      requestAnimationFrame(animateGlowParticles);
     }
 
     function updateSolarInfoBar() {
@@ -2580,6 +2581,7 @@
       });
 
       updateSunDirectionShader();
+      requestAnimationFrame(animateGlowParticles);
     }
 
     function updateSunDirectionShader() {
@@ -2589,10 +2591,157 @@
       state.globeMaterial.uniforms.uSunLng.value = state.sunPosition.lng * deg2rad;
     }
 
-    // 13. Globe Tooltip with Full i18n
+    // ================= 柔和发光点阵（Glow Particles）系统 =================
+    let cachedGlowTexture = null;
+    function getGlowTexture() {
+      if (cachedGlowTexture) return cachedGlowTexture;
+      const canvas = document.createElement("canvas");
+      canvas.width = 128;
+      canvas.height = 128;
+      const ctx = canvas.getContext("2d");
+
+      // 径向渐变：中心亮，边缘柔和透明完全渐隐
+      const gradient = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+      gradient.addColorStop(0.0, "rgba(255, 255, 255, 1.0)");
+      gradient.addColorStop(0.20, "rgba(255, 255, 255, 0.88)");
+      gradient.addColorStop(0.45, "rgba(255, 255, 255, 0.42)");
+      gradient.addColorStop(0.72, "rgba(255, 255, 255, 0.12)");
+      gradient.addColorStop(1.0, "rgba(255, 255, 255, 0.0)");
+
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 128, 128);
+
+      cachedGlowTexture = new THREE.CanvasTexture(canvas);
+      cachedGlowTexture.needsUpdate = true;
+      return cachedGlowTexture;
+    }
+
+    function createGlowObject(d) {
+      const group = new THREE.Group();
+      const glowTex = getGlowTexture();
+
+      // 颜色绑定：与情绪标签颜色一致（低饱和度）
+      const color = new THREE.Color(d.color || "#7DD3FC");
+
+      // 数据映射：留言越多，光晕半径越大，且不透明度越高
+      const total = d.total || 1;
+      const baseRadius = Math.min(3.2 + Math.log2(total + 1) * 2.0, 13.0);
+      // 颜色的透明度整体设置在 0.60 - 0.80 之间，柔和不刺眼
+      const baseOpacity = Math.min(0.60 + Math.min(total, 20) * 0.01, 0.80);
+
+      // 1. 外层柔和光晕精灵（THREE.Sprite + AdditiveBlending）
+      const haloMaterial = new THREE.SpriteMaterial({
+        map: glowTex,
+        color: color,
+        transparent: true,
+        opacity: baseOpacity * 0.88,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false, // 彻底避免发光点与地球模型发生穿模 (Z-fighting)
+      });
+      const haloSprite = new THREE.Sprite(haloMaterial);
+      haloSprite.scale.set(baseRadius, baseRadius, 1.0);
+      group.add(haloSprite);
+
+      // 2. 内层核心微光精灵（中心白亮温润微核）
+      const coreMaterial = new THREE.SpriteMaterial({
+        map: glowTex,
+        color: new THREE.Color("#FFFFFF").lerp(color, 0.45),
+        transparent: true,
+        opacity: baseOpacity,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      });
+      const coreSprite = new THREE.Sprite(coreMaterial);
+      const coreRadius = Math.max(1.6, baseRadius * 0.36);
+      coreSprite.scale.set(coreRadius, coreRadius, 1.0);
+      group.add(coreSprite);
+
+      // 3. 隐形球体碰撞体（提供舒适顺畅的交互热区）
+      const hitMesh = new THREE.Mesh(
+        new THREE.SphereGeometry(Math.max(2.6, baseRadius * 0.65), 8, 8),
+        new THREE.MeshBasicMaterial({ visible: false })
+      );
+      group.add(hitMesh);
+
+      // 呼吸动画元数据：每个发光点具有独立的正弦呼吸相位和周期
+      group.userData = {
+        baseRadius: baseRadius,
+        coreRadius: coreRadius,
+        baseOpacity: baseOpacity,
+        haloSprite: haloSprite,
+        coreSprite: coreSprite,
+        phase: Math.random() * Math.PI * 2,
+        speed: 0.85 + Math.random() * 0.35, // 缓慢太空呼吸周期 (~5-7 秒)
+      };
+
+      if (!state.glowObjects) state.glowObjects = [];
+      state.glowObjects.push(group);
+
+      return group;
+    }
+
+    // 呼吸动画渲染循环：正弦波缩放与透明度缓慢波动
+    function animateGlowParticles(timestamp) {
+      const time = (timestamp || performance.now()) * 0.001;
+      if (state.glowObjects && state.glowObjects.length > 0) {
+        for (let i = 0; i < state.glowObjects.length; i++) {
+          const group = state.glowObjects[i];
+          if (!group || !group.userData) continue;
+          const { baseRadius, coreRadius, baseOpacity, haloSprite, coreSprite, phase, speed } = group.userData;
+
+          // 极慢正弦波：Sin(time * speed + phase)
+          const wave = Math.sin(time * speed + phase);
+
+          // 柔和微缩放 (+-16%)
+          const haloScale = baseRadius * (1.0 + wave * 0.16);
+          if (haloSprite) {
+            haloSprite.scale.set(haloScale, haloScale, 1.0);
+            if (haloSprite.material) {
+              // 透明度正弦微调，保持在 0.60 - 0.80 之间
+              haloSprite.material.opacity = Math.max(0.55, Math.min(0.80, baseOpacity + wave * 0.08));
+            }
+          }
+
+          // 核心微缩放 (+-8%)
+          const coreScale = coreRadius * (1.0 + wave * 0.08);
+          if (coreSprite) {
+            coreSprite.scale.set(coreScale, coreScale, 1.0);
+          }
+        }
+      }
+      requestAnimationFrame(animateGlowParticles);
+    }
+
+    // 渲染柔和发光点阵（Glow Particles）
     function updateGlobePoints(countryStats) {
       if (!state.globe) return;
-      const pointsData = [];
+      state.glowObjects = []; // 重置发光点列表
+
+      // 统计各国主导情绪，绑定对应低饱和度情绪颜色
+      const countryEmotionMap = {};
+      if (state.cachedPosts && state.cachedPosts.length > 0) {
+        const countsByCountry = {};
+        state.cachedPosts.forEach(post => {
+          if (!post.country_code) return;
+          if (!countsByCountry[post.country_code]) countsByCountry[post.country_code] = {};
+          const em = post.emotion || "calm";
+          countsByCountry[post.country_code][em] = (countsByCountry[post.country_code][em] || 0) + 1;
+        });
+        Object.keys(countsByCountry).forEach(cCode => {
+          const emObj = countsByCountry[cCode];
+          let topEm = "calm";
+          let maxCnt = 0;
+          Object.keys(emObj).forEach(em => {
+            if (emObj[em] > maxCnt) {
+              maxCnt = emObj[em];
+              topEm = em;
+            }
+          });
+          countryEmotionMap[cCode] = topEm;
+        });
+      }
+
+      const objectsData = [];
       countryStats.forEach(item => {
         const cCode = item.country_code;
         const coord = COUNTRY_COORDINATES[cCode] || COUNTRY_COORDINATES["UN"];
@@ -2600,33 +2749,43 @@
         const voices = item.voices || 0;
         const diurnal = state.countryDayNightMap[cCode] || { isDay: true, status: "day", alt: "0", localTimeStr: "--:--" };
 
-        pointsData.push({
+        const domEmotion = countryEmotionMap[cCode] || "calm";
+        const emotionData = EMOTION_MAP[domEmotion] || EMOTION_MAP["calm"];
+        const pointColor = emotionData.color;
+
+        objectsData.push({
           code: cCode,
           name: coord.name,
           lat: coord.lat,
           lng: coord.lng,
           total: total,
           voices: voices,
-          altitude: Math.min(0.08 + total * 0.04, 0.65),
-          color: voices > 0 ? "#7DD3FC" : "#94A3B8",
+          dominantEmotion: domEmotion,
+          color: pointColor,
           diurnal: diurnal,
         });
       });
 
+      // 彻底移除生硬柱体，改用高保真柔和发光点阵（Glow Particles）
       state.globe
-        .pointsData(pointsData)
-        .pointAltitude("altitude")
-        .pointColor("color")
-        .pointRadius(1.3)
-        .pointResolution(16)
-        .pointLabel(d => `
+        .pointsData([]) // 清空所有旧柱状体
+        .objectsData(objectsData)
+        .objectLat("lat")
+        .objectLng("lng")
+        .objectAltitude(0.012) // 稍微贴出地球表面 (半径 × 1.012)，避免 Z-fighting 穿模
+        .objectThreeObject(createGlowObject)
+        .objectLabel(d => `
           <div style="background: rgba(15,23,42,0.94); border: 1px solid rgba(255,255,255,0.12); backdrop-filter: blur(16px); padding: 9px 13px; border-radius: 10px; font-size: 12px; color: #F8FAFC; box-shadow: 0 8px 24px rgba(0,0,0,0.5);">
             <strong style="color: #F8FAFC; font-size: 13px;">${d.name} (${d.code})</strong><br/>
+            <span style="color: ${d.color}; display: inline-flex; align-items: center; gap: 4px; margin: 2px 0;">
+              <span style="width: 6px; height: 6px; border-radius: 50%; background: ${d.color}; display: inline-block;"></span>
+              ${t('emotion_' + d.dominantEmotion) || d.dominantEmotion}
+            </span><br/>
             <span style="color: #94A3B8;">${d.diurnal.isDay ? t('globe_tooltip_status_day') : t('globe_tooltip_status_night')} · ${d.diurnal.localTimeStr}</span><br/>
             <span style="color: #7DD3FC;">${t('globe_tooltip_echoes')}: ${d.total} (${t('globe_tooltip_voices')}: ${d.voices})</span>
           </div>
         `)
-        .onPointClick(d => {
+        .onObjectClick(d => {
           state.globe.pointOfView({ lat: d.lat, lng: d.lng, altitude: 1.6 }, 1000);
           state.filterCountry = d.code;
           updateActiveCountryUI();
