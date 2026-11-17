@@ -2209,37 +2209,43 @@
       const dayTexture = textureLoader.load("https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg");
       const nightTexture = textureLoader.load("https://unpkg.com/three-globe/example/img/earth-night.jpg");
 
-      // 2. 自定义昼夜晨昏线着色器 (Day/Night Terminator Shader)
+      // 2. 自定义昼夜晨昏线着色器 (基于等距圆柱投影 UV 绝对经纬度与球面余弦点积)
       const globeMaterial = new THREE.ShaderMaterial({
         uniforms: {
           dayTexture: { value: dayTexture },
           nightTexture: { value: nightTexture },
-          uSunDir: { value: new THREE.Vector3(1, 0, 0) },
+          uSunLat: { value: 0.0 }, // 太阳直射纬度（弧度）
+          uSunLng: { value: 0.0 }, // 太阳直射经度（弧度）
         },
         vertexShader: `
           varying vec2 vUv;
-          varying vec3 vNormal;
 
           void main() {
             vUv = uv;
-            vNormal = normalize(normal);
             gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
           }
         `,
         fragmentShader: `
           uniform sampler2D dayTexture;
           uniform sampler2D nightTexture;
-          uniform vec3 uSunDir;
+          uniform float uSunLat;
+          uniform float uSunLng;
           varying vec2 vUv;
-          varying vec3 vNormal;
+
+          const float PI = 3.14159265359;
 
           void main() {
-            vec3 norm = normalize(vNormal);
-            // 计算表面法线与太阳方向点积
-            float dotProduct = dot(norm, uSunDir);
+            // 直接由 UV 反推绝对经纬度（弧度制）：
+            // vUv.x: 0.0~1.0 -> -PI ~ +PI (-180° ~ +180°)
+            // vUv.y: 0.0~1.0 -> -PI/2 ~ +PI/2 (-90° ~ +90°)
+            float lng = (vUv.x - 0.5) * 2.0 * PI;
+            float lat = (vUv.y - 0.5) * PI;
+
+            // 球面点积公式：精准计算当前经纬度与太阳直射点的夹角余弦
+            float dotProd = sin(lat) * sin(uSunLat) + cos(lat) * cos(uSunLat) * cos(lng - uSunLng);
 
             // 晨昏线平滑过渡 [-0.15, 0.15]
-            float t = smoothstep(-0.15, 0.15, dotProduct);
+            float t = smoothstep(-0.15, 0.15, dotProd);
 
             vec4 dayColor = texture2D(dayTexture, vUv);
             vec4 nightColor = texture2D(nightTexture, vUv);
@@ -2251,7 +2257,7 @@
             vec3 mixedColor = mix(enhancedNight, dayColor.rgb, t);
 
             // 晨昏交界处叠加温暖晚霞橙光散射
-            float twilight = (1.0 - smoothstep(0.0, 0.15, abs(dotProduct))) * 0.35;
+            float twilight = (1.0 - smoothstep(0.0, 0.15, abs(dotProd))) * 0.35;
             vec3 sunsetGlow = vec3(1.0, 0.45, 0.12) * twilight;
 
             gl_FragColor = vec4(mixedColor + sunsetGlow, 1.0);
@@ -2309,11 +2315,9 @@
     function updateSunDirectionShader() {
       if (!state.globe || !state.globeMaterial) return;
       const sun = state.sunPosition;
-      // 利用 globe.getCoords 将太阳经纬度转换为 3D 空间坐标向量并归一化
-      const coords = state.globe.getCoords(sun.lat, sun.lng, 1);
-      if (coords) {
-        state.globeMaterial.uniforms.uSunDir.value.set(coords.x, coords.y, coords.z).normalize();
-      }
+      const deg2rad = Math.PI / 180.0;
+      state.globeMaterial.uniforms.uSunLat.value = sun.lat * deg2rad;
+      state.globeMaterial.uniforms.uSunLng.value = sun.lng * deg2rad;
     }
 
     // 更新 3D 地球上的光柱数据（融合昼夜与内容类型）
