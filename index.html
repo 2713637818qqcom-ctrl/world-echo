@@ -1,0 +1,1983 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WORLD ECHO | 世界回声 — 全球匿名文字与语音社区</title>
+  <meta name="description" content="听见世界另一端的心跳，留下穿越经纬的回声。深空3D地球、全球匿名文字与语音社区。">
+
+  <!-- 引入 Three.js 与 Globe.gl CDN -->
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/globe.gl@2.32.0/dist/globe.gl.min.js"></script>
+
+  <style>
+    :root {
+      --bg-space: #060b16;
+      --panel-bg: rgba(13, 22, 40, 0.85);
+      --panel-border: rgba(64, 196, 255, 0.22);
+      --panel-border-hover: rgba(64, 196, 255, 0.5);
+      --cyan-voice: #00e5ff;
+      --blue-text: #2979ff;
+      --purple-mood: #b388ff;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent-glow: 0 0 20px rgba(0, 229, 255, 0.35);
+      --card-bg: rgba(18, 30, 54, 0.7);
+      --danger: #ff5252;
+      --radius: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-space);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(30, 58, 138, 0.25) 0%, transparent 60%),
+        radial-gradient(circle at 100% 100%, rgba(0, 229, 255, 0.08) 0%, transparent 40%);
+    }
+
+    /* 顶部导航条 */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(18px);
+      background: rgba(6, 11, 22, 0.8);
+      border-bottom: 1px solid var(--panel-border);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-logo {
+      font-size: 1.6rem;
+      filter: drop-shadow(0 0 8px var(--cyan-voice));
+      animation: pulse 3s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.9; }
+      50% { transform: scale(1.08); opacity: 1; }
+    }
+
+    .brand-text h1 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      background: linear-gradient(135deg, #ffffff 0%, var(--cyan-voice) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-text p {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .user-pill {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--panel-border);
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .user-pill:hover {
+      border-color: var(--cyan-voice);
+      background: rgba(0, 229, 255, 0.1);
+      box-shadow: 0 0 12px rgba(0, 229, 255, 0.2);
+    }
+
+    /* 3D 地球展示区 */
+    .globe-section {
+      position: relative;
+      width: 100%;
+      height: 480px;
+      overflow: hidden;
+      background: radial-gradient(circle at center, #0f1c38 0%, #060b16 80%);
+      border-bottom: 1px solid var(--panel-border);
+    }
+
+    #globe-container {
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+    }
+
+    #globe-container:active {
+      cursor: grabbing;
+    }
+
+    .globe-overlay {
+      position: absolute;
+      bottom: 1rem;
+      left: 1.5rem;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .globe-stat-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(6, 11, 22, 0.75);
+      border: 1px solid var(--panel-border);
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      backdrop-filter: blur(8px);
+      pointer-events: auto;
+    }
+
+    .globe-controls {
+      position: absolute;
+      top: 1rem;
+      right: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 10;
+    }
+
+    .btn-icon {
+      background: rgba(13, 22, 40, 0.85);
+      border: 1px solid var(--panel-border);
+      color: var(--text-main);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(8px);
+    }
+
+    .btn-icon:hover {
+      border-color: var(--cyan-voice);
+      background: rgba(0, 229, 255, 0.2);
+      transform: scale(1.08);
+    }
+
+    /* 主体布局（左右分栏） */
+    .main-container {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 1024px) {
+      .globe-section { height: 380px; }
+      .main-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* 通用玻璃面板 */
+    .glass-panel {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius);
+      backdrop-filter: blur(16px);
+      padding: 1.25rem;
+      transition: border-color 0.3s ease;
+    }
+
+    .glass-panel:hover {
+      border-color: var(--panel-border-hover);
+    }
+
+    .panel-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      letter-spacing: 0.03em;
+    }
+
+    /* 左侧：世界情绪天气面板 */
+    .mood-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .mood-chip {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 0.35rem 0.65rem;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .mood-chip:hover {
+      background: rgba(179, 136, 255, 0.15);
+      border-color: var(--purple-mood);
+    }
+
+    .mood-chip.active {
+      background: rgba(179, 136, 255, 0.25);
+      border-color: var(--purple-mood);
+      color: #fff;
+      box-shadow: 0 0 10px rgba(179, 136, 255, 0.4);
+    }
+
+    .mood-count {
+      opacity: 0.6;
+      font-size: 0.7rem;
+    }
+
+    /* 左侧：回声发射台 (Composer) */
+    .composer-tabs {
+      display: flex;
+      background: rgba(0, 0, 0, 0.35);
+      padding: 0.3rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+
+    .composer-tab {
+      flex: 1;
+      text-align: center;
+      padding: 0.5rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--text-muted);
+    }
+
+    .composer-tab.active {
+      background: rgba(0, 229, 255, 0.15);
+      color: var(--cyan-voice);
+      border: 1px solid rgba(0, 229, 255, 0.3);
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 0.35rem;
+    }
+
+    textarea, input[type="text"] {
+      width: 100%;
+      background: rgba(6, 11, 22, 0.7);
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      padding: 0.7rem;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    textarea:focus, input[type="text"]:focus {
+      border-color: var(--cyan-voice);
+      box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    .char-count {
+      text-align: right;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    /* 录音机区域 */
+    .recorder-box {
+      background: rgba(6, 11, 22, 0.6);
+      border: 1px dashed var(--panel-border);
+      border-radius: 10px;
+      padding: 1.2rem;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .record-timer {
+      font-size: 1.8rem;
+      font-weight: 700;
+      font-family: monospace;
+      color: var(--cyan-voice);
+      margin: 0.5rem 0;
+    }
+
+    .record-controls {
+      display: flex;
+      justify-content: center;
+      gap: 0.8rem;
+      margin-top: 0.5rem;
+    }
+
+    .btn-record {
+      background: linear-gradient(135deg, #ff1744 0%, #d50000 100%);
+      color: #fff;
+      border: none;
+      padding: 0.6rem 1.4rem;
+      border-radius: 24px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      box-shadow: 0 0 15px rgba(255, 23, 68, 0.4);
+      transition: all 0.2s;
+    }
+
+    .btn-record.recording {
+      animation: pulse-red 1.2s infinite;
+    }
+
+    @keyframes pulse-red {
+      0% { box-shadow: 0 0 0 0 rgba(255, 23, 68, 0.6); }
+      70% { box-shadow: 0 0 0 14px rgba(255, 23, 68, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 23, 68, 0); }
+    }
+
+    .audio-preview {
+      width: 100%;
+      margin-top: 0.8rem;
+      display: none;
+    }
+
+    /* 情绪下拉/选择 */
+    .emotion-select-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .emotion-radio-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      padding: 0.4rem 0.2rem;
+      text-align: center;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .emotion-radio-btn.selected {
+      background: rgba(0, 229, 255, 0.15);
+      border-color: var(--cyan-voice);
+      color: #fff;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      margin-bottom: 1rem;
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, #00b0ff 0%, #00e5ff 100%);
+      color: #060b16;
+      border: none;
+      padding: 0.75rem;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.05em;
+      box-shadow: 0 0 15px rgba(0, 229, 255, 0.35);
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      filter: brightness(1.15);
+      transform: translateY(-1px);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* 右侧：信息流过滤与列表 */
+    .stream-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      margin-bottom: 1.25rem;
+      background: rgba(13, 22, 40, 0.6);
+      padding: 0.8rem 1rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--panel-border);
+    }
+
+    .active-country-filter {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .btn-reset-country {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--panel-border);
+      color: var(--cyan-voice);
+      padding: 0.25rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-reset-country:hover {
+      background: rgba(0, 229, 255, 0.2);
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--panel-border);
+      color: var(--text-muted);
+      padding: 0.3rem 0.7rem;
+      border-radius: 16px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-btn.active {
+      background: rgba(0, 229, 255, 0.15);
+      border-color: var(--cyan-voice);
+      color: var(--cyan-voice);
+    }
+
+    /* 回声卡片 (Echo Card) */
+    .echo-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .echo-card {
+      background: var(--card-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius);
+      padding: 1.2rem;
+      transition: all 0.25s ease;
+      position: relative;
+    }
+
+    .echo-card:hover {
+      border-color: var(--panel-border-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+    }
+
+    .echo-card.voice-card {
+      border-left: 3px solid var(--cyan-voice);
+    }
+
+    .echo-card.text-card {
+      border-left: 3px solid var(--blue-text);
+    }
+
+    .echo-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+
+    .author-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .author-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1e3a8a, #00e5ff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .author-meta {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .author-name {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .post-time {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .badge-group {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .country-tag {
+      background: rgba(41, 121, 255, 0.15);
+      border: 1px solid rgba(41, 121, 255, 0.3);
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      color: #82b1ff;
+    }
+
+    .emotion-tag {
+      background: rgba(179, 136, 255, 0.15);
+      border: 1px solid rgba(179, 136, 255, 0.3);
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      color: #d1c4e9;
+    }
+
+    .echo-card-content {
+      font-size: 0.92rem;
+      line-height: 1.6;
+      color: #e2e8f0;
+      margin-bottom: 0.85rem;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+
+    /* 语音播放条 */
+    .voice-player-bar {
+      background: rgba(6, 11, 22, 0.8);
+      border: 1px solid var(--panel-border);
+      border-radius: 10px;
+      padding: 0.6rem 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .btn-play-voice {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--cyan-voice);
+      color: #060b16;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    .btn-play-voice:hover {
+      transform: scale(1.08);
+      box-shadow: 0 0 10px var(--cyan-voice);
+    }
+
+    .voice-wave-container {
+      flex: 1;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .wave-bar {
+      flex: 1;
+      height: 30%;
+      background: rgba(0, 229, 255, 0.4);
+      border-radius: 2px;
+      transition: height 0.2s ease;
+    }
+
+    .voice-player-bar.playing .wave-bar {
+      animation: wave 1s infinite alternate ease-in-out;
+    }
+
+    .voice-player-bar.playing .wave-bar:nth-child(2n) { animation-delay: 0.2s; }
+    .voice-player-bar.playing .wave-bar:nth-child(3n) { animation-delay: 0.4s; }
+    .voice-player-bar.playing .wave-bar:nth-child(4n) { animation-delay: 0.1s; }
+
+    @keyframes wave {
+      0% { height: 20%; }
+      100% { height: 90%; background: var(--cyan-voice); }
+    }
+
+    .voice-duration {
+      font-size: 0.78rem;
+      color: var(--cyan-voice);
+      font-family: monospace;
+      font-weight: 600;
+    }
+
+    .echo-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding-top: 0.7rem;
+      margin-top: 0.5rem;
+    }
+
+    .action-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn-action {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .btn-action:hover {
+      color: var(--text-main);
+    }
+
+    .btn-action.liked {
+      color: #ff5252;
+    }
+
+    .btn-action.btn-del {
+      color: var(--text-muted);
+    }
+
+    .btn-action.btn-del:hover {
+      color: var(--danger);
+    }
+
+    /* 模态弹窗 */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(6, 11, 22, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #0d1628;
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 520px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+      overflow: hidden;
+    }
+
+    .modal-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--panel-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-body {
+      padding: 1.25rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .comment-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+
+    .comment-item {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      padding: 0.7rem;
+      font-size: 0.85rem;
+    }
+
+    .comment-item-header {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      margin-bottom: 0.3rem;
+    }
+
+    /* Toast 消息提示 */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(13, 22, 40, 0.95);
+      border: 1px solid var(--cyan-voice);
+      color: #fff;
+      padding: 0.6rem 1.2rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      z-index: 999;
+      box-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+      pointer-events: none;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 顶部导航 -->
+  <header>
+    <a href="/" class="brand">
+      <div class="brand-logo">🌐</div>
+      <div class="brand-text">
+        <h1>WORLD ECHO</h1>
+        <p>世界回声 · 全球匿名文字与语音社区</p>
+      </div>
+    </a>
+    <div class="header-actions">
+      <div class="user-pill" id="identity-btn" title="查看或备份匿名身份">
+        <span>👤</span>
+        <span id="current-nickname-display">探索者</span>
+        <span id="my-country-badge" style="opacity: 0.7; font-size: 0.75rem;">...</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- 3D 地球视窗 -->
+  <div class="globe-section">
+    <div id="globe-container"></div>
+    <div class="globe-overlay">
+      <div class="globe-stat-badge">
+        <span style="color: var(--cyan-voice);">●</span>
+        <span>青色光柱: 语音回声</span>
+        <span style="color: var(--blue-text); margin-left: 0.5rem;">●</span>
+        <span>蓝色光柱: 文字留言</span>
+      </div>
+    </div>
+    <div class="globe-controls">
+      <button class="btn-icon" id="btn-toggle-spin" title="自转切换">⟳</button>
+      <button class="btn-icon" id="btn-reset-view" title="全球全景视角">🌍</button>
+    </div>
+  </div>
+
+  <!-- 主体工作区 -->
+  <main class="main-container">
+    
+    <!-- 左侧：情绪天气 + 发射回声 -->
+    <aside style="display: flex; flex-direction: column; gap: 1.5rem;">
+      
+      <!-- 世界情绪天气 -->
+      <section class="glass-panel">
+        <div class="panel-title">
+          <span>🌦️ 世界情绪天气 (World Mood)</span>
+          <span style="font-size: 0.75rem; color: var(--text-muted);" id="mood-summary">加载中...</span>
+        </div>
+        <div class="mood-grid" id="mood-container">
+          <!-- 情绪胶囊由 JS 动态生成 -->
+        </div>
+      </section>
+
+      <!-- 回声发射台 -->
+      <section class="glass-panel">
+        <div class="panel-title">
+          <span>📡 发射回声 (Broadcast)</span>
+          <span style="font-size: 0.75rem; color: var(--cyan-voice);" id="composer-mode-badge">语音模式</span>
+        </div>
+
+        <div class="composer-tabs">
+          <div class="composer-tab active" data-type="voice" id="tab-voice">🎙️ 录制语音</div>
+          <div class="composer-tab" data-type="text" id="tab-text">✍️ 抒写文字</div>
+        </div>
+
+        <!-- 语音录制区 -->
+        <div id="voice-composer-area">
+          <div class="recorder-box">
+            <div style="font-size: 0.8rem; color: var(--text-muted);">最长 60 秒原生立体声录制</div>
+            <div class="record-timer" id="record-timer">00:00</div>
+            <div class="record-controls">
+              <button class="btn-record" id="btn-record-toggle">
+                <span>●</span> <span id="record-btn-text">开始录音</span>
+              </button>
+              <button class="btn-icon" id="btn-rerecord" style="display: none;" title="重录">↺</button>
+            </div>
+            <audio id="local-audio-preview" class="audio-preview" controls></audio>
+          </div>
+          
+          <div class="form-group">
+            <label>附带随想（可选）：</label>
+            <input type="text" id="voice-caption-input" maxlength="200" placeholder="为这束回声附上一句话...">
+          </div>
+        </div>
+
+        <!-- 文字录入区 -->
+        <div id="text-composer-area" style="display: none;">
+          <div class="form-group">
+            <label>文字内容（限 1000 字）：</label>
+            <textarea id="text-content-input" maxlength="1000" placeholder="这一刻，你在世界哪处，经历着怎样的心境？"></textarea>
+            <div class="char-count"><span id="text-char-count">0</span> / 1000</div>
+          </div>
+        </div>
+
+        <!-- 情绪选择器 -->
+        <div class="form-group">
+          <label>此刻心境（情绪标签）：</label>
+          <div class="emotion-select-row" id="emotion-selector">
+            <div class="emotion-radio-btn selected" data-emotion="calm">🌊 平静</div>
+            <div class="emotion-radio-btn" data-emotion="happy">✨ 开心</div>
+            <div class="emotion-radio-btn" data-emotion="hopeful">🌱 希望</div>
+            <div class="emotion-radio-btn" data-emotion="lonely">🌙 孤独</div>
+            <div class="emotion-radio-btn" data-emotion="tired">🍂 疲惫</div>
+            <div class="emotion-radio-btn" data-emotion="love">❤️ 温暖</div>
+            <div class="emotion-radio-btn" data-emotion="sad">🌧️ 难过</div>
+            <div class="emotion-radio-btn" data-emotion="anxious">⚡ 焦虑</div>
+            <div class="emotion-radio-btn" data-emotion="angry">🔥 愤怒</div>
+          </div>
+        </div>
+
+        <!-- 匿名选项 -->
+        <label class="checkbox-row">
+          <input type="checkbox" id="hide-country-checkbox">
+          <span>隐藏我的国家归属（标记为 UN 深空孤岛）</span>
+        </label>
+
+        <!-- 发送按钮 -->
+        <button class="btn-submit" id="btn-submit-echo">发送回声 🚀</button>
+      </section>
+
+    </aside>
+
+    <!-- 右侧：全球回声流 -->
+    <section>
+      <!-- 过滤栏 -->
+      <div class="stream-header">
+        <div class="active-country-filter">
+          <span id="active-filter-label">🌍 全球漫游</span>
+          <button class="btn-reset-country" id="btn-clear-country" style="display: none;">返回全球</button>
+        </div>
+
+        <div class="filter-group">
+          <button class="filter-btn active" data-type="all">全部</button>
+          <button class="filter-btn" data-type="voice">🎙️ 语音</button>
+          <button class="filter-btn" data-type="text">✍️ 文字</button>
+          <span style="border-left: 1px solid var(--panel-border); height: 16px; margin: 0 4px;"></span>
+          <button class="filter-btn active" data-sort="latest">⏱️ 最新</button>
+          <button class="filter-btn" data-sort="popular">🔥 热门</button>
+          <button class="filter-btn" data-sort="random">🎲 探索</button>
+          <button class="btn-icon" id="btn-refresh-stream" style="width: 28px; height: 28px; font-size: 0.8rem;" title="刷新">🔄</button>
+        </div>
+      </div>
+
+      <!-- 留言卡片列表 -->
+      <div class="echo-list" id="echo-stream-container">
+        <div class="empty-state">正在调频宇宙接收器...</div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 模态框：匿名身份管理 / 恢复码 -->
+  <div class="modal-backdrop" id="identity-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 style="font-size: 1rem; font-weight: 700;">👤 匿名身份与凭据</h3>
+        <button class="btn-icon" id="btn-close-identity" style="width: 28px; height: 28px;">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>你的匿名代号：</label>
+          <div style="display: flex; gap: 0.5rem;">
+            <input type="text" id="input-nickname" maxlength="30" placeholder="例如：星海漫游者 #42">
+            <button class="btn-submit" id="btn-save-nickname" style="width: auto; padding: 0.4rem 1rem; font-size: 0.85rem;">保存</button>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 1.5rem;">
+          <label>身份恢复码（换设备/清缓存后恢复身份）：</label>
+          <textarea id="identity-export-text" readonly style="font-family: monospace; font-size: 0.75rem; height: 70px; background: rgba(0,0,0,0.5);"></textarea>
+          <button class="btn-submit" id="btn-copy-identity" style="margin-top: 0.4rem; background: rgba(255,255,255,0.1); color: #fff; box-shadow: none;">📋 复制身份恢复码</button>
+        </div>
+
+        <div class="form-group" style="margin-top: 1.5rem; border-top: 1px solid var(--panel-border); padding-top: 1rem;">
+          <label>导入恢复码恢复旧身份：</label>
+          <textarea id="identity-import-text" placeholder="粘贴此前备份的恢复码..." style="font-family: monospace; font-size: 0.75rem; height: 60px;"></textarea>
+          <button class="btn-submit" id="btn-import-identity" style="margin-top: 0.4rem; background: var(--purple-mood); color: #060b16;">恢复该身份</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 模态框：评论回复 -->
+  <div class="modal-backdrop" id="comment-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 style="font-size: 1rem; font-weight: 700;">💬 留言回复</h3>
+        <button class="btn-icon" id="btn-close-comments" style="width: 28px; height: 28px;">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="comment-original-quote" style="padding: 0.8rem; background: rgba(255,255,255,0.04); border-radius: 8px; font-size: 0.85rem; margin-bottom: 1rem; color: var(--text-muted);">
+          <!-- 原始留言摘要 -->
+        </div>
+        
+        <div class="form-group">
+          <textarea id="comment-input" maxlength="500" placeholder="留下你的善意回应..."></textarea>
+          <button class="btn-submit" id="btn-submit-comment" style="margin-top: 0.5rem;">发表回复</button>
+        </div>
+
+        <div style="font-weight: 600; font-size: 0.85rem; margin-top: 1rem;">全部回应：</div>
+        <div class="comment-list" id="modal-comments-container">
+          <div style="font-size: 0.8rem; color: var(--text-muted); text-align: center;">暂无回应</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 模态框：举报确认 -->
+  <div class="modal-backdrop" id="report-modal">
+    <div class="modal-card" style="max-width: 400px;">
+      <div class="modal-header">
+        <h3 style="font-size: 1rem; font-weight: 700;">🚩 举报不良内容</h3>
+        <button class="btn-icon" id="btn-close-report" style="width: 28px; height: 28px;">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>选择或填写违规理由：</label>
+          <select id="report-reason-select" style="width: 100%; padding: 0.6rem; background: rgba(6, 11, 22, 0.9); border: 1px solid var(--panel-border); color: #fff; border-radius: 8px; margin-bottom: 0.6rem;">
+            <option value="恶意辱骂或人身攻击">恶意辱骂或人身攻击</option>
+            <option value="违法有害内容">违法有害内容</option>
+            <option value="垃圾广告骚扰">垃圾广告骚扰</option>
+            <option value="侵犯他人隐私">侵犯他人隐私</option>
+            <option value="其他违规原因">其他违规原因</option>
+          </select>
+          <input type="text" id="report-reason-detail" placeholder="补充详细说明（可选）">
+        </div>
+        <button class="btn-submit" id="btn-confirm-report" style="background: var(--danger); color: #fff;">提交举报</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast 提示容器 -->
+  <div class="toast" id="toast-el">提示信息</div>
+
+  <script>
+    // ================= 全局核心国家与经纬度映射表 (45+ 个主流国家/地区) =================
+    const COUNTRY_COORDINATES = {
+      "CN": { name: "中国", lat: 35.8617, lng: 104.1954, flag: "🇨🇳" },
+      "US": { name: "美国", lat: 37.0902, lng: -95.7129, flag: "🇺🇸" },
+      "JP": { name: "日本", lat: 36.2048, lng: 138.2529, flag: "🇯🇵" },
+      "GB": { name: "英国", lat: 55.3781, lng: -3.4360, flag: "🇬🇧" },
+      "DE": { name: "德国", lat: 51.1657, lng: 10.4515, flag: "🇩🇪" },
+      "FR": { name: "法国", lat: 46.2276, lng: 2.2137, flag: "🇫🇷" },
+      "RU": { name: "俄罗斯", lat: 61.5240, lng: 105.3188, flag: "🇷🇺" },
+      "IN": { name: "印度", lat: 20.5937, lng: 78.9629, flag: "🇮🇳" },
+      "AU": { name: "澳大利亚", lat: -25.2744, lng: 133.7751, flag: "🇦🇺" },
+      "CA": { name: "加拿大", lat: 56.1304, lng: -106.3468, flag: "🇨🇦" },
+      "BR": { name: "巴西", lat: -14.2350, lng: -51.9253, flag: "🇧🇷" },
+      "KR": { name: "韩国", lat: 35.9078, lng: 127.7669, flag: "🇰🇷" },
+      "IT": { name: "意大利", lat: 41.8719, lng: 12.5674, flag: "🇮🇹" },
+      "ES": { name: "西班牙", lat: 40.4637, lng: -3.7492, flag: "🇪🇸" },
+      "MX": { name: "墨西哥", lat: 23.6345, lng: -102.5528, flag: "🇲🇽" },
+      "ID": { name: "印度尼西亚", lat: -0.7893, lng: 113.9213, flag: "🇮🇩" },
+      "NL": { name: "荷兰", lat: 52.1326, lng: 5.2913, flag: "🇳🇱" },
+      "SA": { name: "沙特阿拉伯", lat: 23.8859, lng: 45.0792, flag: "🇸🇦" },
+      "TR": { name: "土耳其", lat: 38.9637, lng: 35.2433, flag: "🇹🇷" },
+      "CH": { name: "瑞士", lat: 46.8182, lng: 8.2275, flag: "🇨🇭" },
+      "SE": { name: "瑞典", lat: 60.1282, lng: 18.6435, flag: "🇸🇪" },
+      "PL": { name: "波兰", lat: 51.9194, lng: 19.1451, flag: "🇵🇱" },
+      "BE": { name: "比利时", lat: 50.5039, lng: 4.4699, flag: "🇧🇪" },
+      "AR": { name: "阿根廷", lat: -38.4161, lng: -63.6167, flag: "🇦🇷" },
+      "NO": { name: "挪威", lat: 60.4720, lng: 8.4689, flag: "🇳🇴" },
+      "AT": { name: "奥地利", lat: 47.5162, lng: 14.5501, flag: "🇦🇹" },
+      "ZA": { name: "南非", lat: -30.5595, lng: 22.9375, flag: "🇿🇦" },
+      "TH": { name: "泰国", lat: 15.8700, lng: 100.9925, flag: "🇹🇭" },
+      "AE": { name: "阿联酋", lat: 23.4241, lng: 53.8478, flag: "🇦🇪" },
+      "SG": { name: "新加坡", lat: 1.3521, lng: 103.8198, flag: "🇸🇬" },
+      "MY": { name: "马来西亚", lat: 4.2105, lng: 101.9758, flag: "🇲🇾" },
+      "VN": { name: "越南", lat: 14.0583, lng: 108.2772, flag: "🇻🇳" },
+      "PH": { name: "菲律宾", lat: 12.8797, lng: 121.7740, flag: "🇵🇭" },
+      "NZ": { name: "新西兰", lat: -40.9006, lng: 174.8860, flag: "🇳🇿" },
+      "EG": { name: "埃及", lat: 26.8206, lng: 30.8025, flag: "🇪🇬" },
+      "CL": { name: "智利", lat: -35.6751, lng: -71.5430, flag: "🇨🇱" },
+      "CO": { name: "哥伦比亚", lat: 4.5709, lng: -74.2973, flag: "🇨🇴" },
+      "PK": { name: "巴基斯坦", lat: 30.3753, lng: 69.3451, flag: "🇵🇰" },
+      "NG": { name: "尼日利亚", lat: 9.0820, lng: 8.6753, flag: "🇳🇬" },
+      "GR": { name: "希腊", lat: 39.0742, lng: 21.8243, flag: "🇬🇷" },
+      "PT": { name: "葡萄牙", lat: 39.3999, lng: -8.2245, flag: "🇵🇹" },
+      "UN": { name: "深空孤岛", lat: 0.0, lng: 0.0, flag: "🛸" },
+    };
+
+    const EMOTION_MAP = {
+      "calm": { label: "平静", icon: "🌊" },
+      "happy": { label: "开心", icon: "✨" },
+      "hopeful": { label: "希望", icon: "🌱" },
+      "lonely": { label: "孤独", icon: "🌙" },
+      "tired": { label: "疲惫", icon: "🍂" },
+      "love": { label: "温暖", icon: "❤️" },
+      "sad": { label: "难过", icon: "🌧️" },
+      "anxious": { label: "焦虑", icon: "⚡" },
+      "angry": { label: "愤怒", icon: "🔥" },
+    };
+
+    // ================= 全局状态管理器 =================
+    const state = {
+      userId: "",
+      token: "",
+      nickname: "",
+      visitorCountry: "UN",
+      filterCountry: "ALL",
+      filterType: "all",
+      filterEmotion: "all",
+      filterSort: "latest",
+      composerType: "voice",
+      selectedEmotion: "calm",
+      recordingBlob: null,
+      recordingDuration: 0,
+      isRecording: false,
+      mediaRecorder: null,
+      recordTimerInterval: null,
+      globe: null,
+      currentPlayingAudio: null,
+      reportingPostId: null,
+      commentingPostId: null,
+    };
+
+    // ================= 辅助函数：Toast 提示 =================
+    function showToast(msg) {
+      const toast = document.getElementById("toast-el");
+      toast.textContent = msg;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2600);
+    }
+
+    // ================= 1. 匿名身份生成与持久化 =================
+    function initIdentity() {
+      let uid = localStorage.getItem("we_user_id");
+      let token = localStorage.getItem("we_token");
+      let nick = localStorage.getItem("we_nickname");
+
+      if (!uid || !token) {
+        uid = "usr_" + Math.random().toString(36).substring(2, 10) + Date.now().toString(36).slice(-4);
+        token = Array.from(crypto.getRandomValues(new Uint8Array(16)))
+          .map(b => b.toString(16).padStart(2, "0")).join("");
+        nick = "回声旅人 #" + Math.floor(1000 + Math.random() * 9000);
+        
+        localStorage.setItem("we_user_id", uid);
+        localStorage.setItem("we_token", token);
+        localStorage.setItem("we_nickname", nick);
+      }
+
+      state.userId = uid;
+      state.token = token;
+      state.nickname = nick || "回声旅人";
+      document.getElementById("current-nickname-display").textContent = state.nickname;
+    }
+
+    // 更新昵称
+    async function updateNickname(newNick) {
+      if (!newNick || !newNick.trim()) return;
+      try {
+        const res = await fetch("/api/echo", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "update_nickname",
+            user_id: state.userId,
+            token: state.token,
+            nickname: newNick.trim(),
+          })
+        });
+        const d = await res.json();
+        if (d.success) {
+          state.nickname = d.nickname;
+          localStorage.setItem("we_nickname", d.nickname);
+          document.getElementById("current-nickname-display").textContent = d.nickname;
+          showToast("代号已更新");
+        } else {
+          showToast(d.error || "更新失败");
+        }
+      } catch (e) {
+        showToast("网络请求失败");
+      }
+    }
+
+    // ================= 2. 3D 地球初始化 (Globe.gl) =================
+    function initGlobe() {
+      const container = document.getElementById("globe-container");
+      const globe = Globe()(container)
+        .globeImageUrl("https://unpkg.com/three-globe@2.30.0/example/img/earth-night.jpg")
+        .bumpImageUrl("https://unpkg.com/three-globe@2.30.0/example/img/earth-topology.png")
+        .backgroundImageUrl("https://unpkg.com/three-globe@2.30.0/example/img/night-sky.png")
+        .atmosphereColor("#00e5ff")
+        .atmosphereAltitude(0.18)
+        .pointOfView({ lat: 20, lng: 110, altitude: 2.2 });
+
+      // 自转配置
+      globe.controls().autoRotate = true;
+      globe.controls().autoRotateSpeed = 0.5;
+
+      // 自转开关按钮
+      let isSpinning = true;
+      document.getElementById("btn-toggle-spin").addEventListener("click", () => {
+        isSpinning = !isSpinning;
+        globe.controls().autoRotate = isSpinning;
+        showToast(isSpinning ? "已开启地球自转" : "已暂停地球自转");
+      });
+
+      // 重置全球视角
+      document.getElementById("btn-reset-view").addEventListener("click", () => {
+        globe.pointOfView({ lat: 20, lng: 0, altitude: 2.4 }, 1000);
+        state.filterCountry = "ALL";
+        updateActiveCountryUI();
+        loadEchoStream();
+      });
+
+      state.globe = globe;
+      window.addEventListener("resize", () => {
+        globe.width(container.clientWidth);
+        globe.height(container.clientHeight);
+      });
+    }
+
+    // 更新 3D 地球上的光柱数据
+    function updateGlobePoints(countryStats) {
+      if (!state.globe) return;
+
+      const pointsData = [];
+      countryStats.forEach(item => {
+        const cCode = item.country_code;
+        const coord = COUNTRY_COORDINATES[cCode] || COUNTRY_COORDINATES["UN"];
+        const total = item.total || 0;
+        const voices = item.voices || 0;
+        
+        // 高度与颜色计算
+        const altitude = Math.min(0.08 + total * 0.04, 0.65);
+        const color = voices > 0 ? "#00e5ff" : "#2979ff";
+
+        pointsData.push({
+          code: cCode,
+          name: coord.name,
+          flag: coord.flag,
+          lat: coord.lat,
+          lng: coord.lng,
+          total: total,
+          voices: voices,
+          altitude: altitude,
+          color: color,
+        });
+      });
+
+      state.globe
+        .pointsData(pointsData)
+        .pointAltitude("altitude")
+        .pointColor("color")
+        .pointRadius(1.2)
+        .pointLabel(d => `
+          <div style="background: rgba(6,11,22,0.9); border: 1px solid #00e5ff; padding: 6px 10px; border-radius: 8px; font-size: 12px; color: #fff;">
+            <strong>${d.flag} ${d.name} (${d.code})</strong><br/>
+            回声总数: ${d.total} | 语音: ${d.voices}
+          </div>
+        `)
+        .onPointClick(d => {
+          state.globe.pointOfView({ lat: d.lat, lng: d.lng, altitude: 1.6 }, 1000);
+          state.filterCountry = d.code;
+          updateActiveCountryUI();
+          loadEchoStream();
+          showToast(`已定位至 ${d.flag} ${d.name}`);
+        });
+    }
+
+    function updateActiveCountryUI() {
+      const label = document.getElementById("active-filter-label");
+      const btnClear = document.getElementById("btn-clear-country");
+      if (state.filterCountry === "ALL") {
+        label.textContent = "🌍 全球漫游";
+        btnClear.style.display = "none";
+      } else {
+        const info = COUNTRY_COORDINATES[state.filterCountry] || { name: state.filterCountry, flag: "🌐" };
+        label.textContent = `📍 区域: ${info.flag} ${info.name}`;
+        btnClear.style.display = "inline-block";
+      }
+    }
+
+    // ================= 3. 麦克风录音与音频控制 =================
+    const btnRecordToggle = document.getElementById("btn-record-toggle");
+    const recordBtnText = document.getElementById("record-btn-text");
+    const recordTimer = document.getElementById("record-timer");
+    const btnRerecord = document.getElementById("btn-rerecord");
+    const localAudioPreview = document.getElementById("local-audio-preview");
+
+    async function startRecording() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        let options = { mimeType: "audio/webm" };
+        if (!MediaRecorder.isTypeSupported("audio/webm")) {
+          options = MediaRecorder.isTypeSupported("audio/mp4") ? { mimeType: "audio/mp4" } : {};
+        }
+
+        const mediaRecorder = new MediaRecorder(stream, options);
+        let audioChunks = [];
+
+        mediaRecorder.ondataavailable = (e) => {
+          if (e.data.size > 0) audioChunks.push(e.data);
+        };
+
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(audioChunks, { type: mediaRecorder.mimeType || "audio/webm" });
+          state.recordingBlob = blob;
+          const audioUrl = URL.createObjectURL(blob);
+          localAudioPreview.src = audioUrl;
+          localAudioPreview.style.display = "block";
+          btnRerecord.style.display = "inline-flex";
+          // 停止媒体轨道
+          stream.getTracks().forEach(track => track.stop());
+        };
+
+        mediaRecorder.start();
+        state.mediaRecorder = mediaRecorder;
+        state.isRecording = true;
+        state.recordingDuration = 0;
+        btnRecordToggle.classList.add("recording");
+        recordBtnText.textContent = "完成录制";
+
+        // 60秒倒计时秒表
+        clearInterval(state.recordTimerInterval);
+        state.recordTimerInterval = setInterval(() => {
+          state.recordingDuration++;
+          const mins = String(Math.floor(state.recordingDuration / 60)).padStart(2, "0");
+          const secs = String(state.recordingDuration % 60).padStart(2, "0");
+          recordTimer.textContent = `${mins}:${secs}`;
+
+          if (state.recordingDuration >= 60) {
+            stopRecording();
+            showToast("已达到最大 60 秒录制时限");
+          }
+        }, 1000);
+
+      } catch (err) {
+        showToast("无法访问麦克风，请检查浏览器权限");
+        console.error("Microphone error:", err);
+      }
+    }
+
+    function stopRecording() {
+      if (state.mediaRecorder && state.isRecording) {
+        state.mediaRecorder.stop();
+        state.isRecording = false;
+        clearInterval(state.recordTimerInterval);
+        btnRecordToggle.classList.remove("recording");
+        recordBtnText.textContent = "重新录音";
+      }
+    }
+
+    btnRecordToggle.addEventListener("click", () => {
+      if (!state.isRecording) {
+        startRecording();
+      } else {
+        stopRecording();
+      }
+    });
+
+    btnRerecord.addEventListener("click", () => {
+      stopRecording();
+      state.recordingBlob = null;
+      state.recordingDuration = 0;
+      localAudioPreview.style.display = "none";
+      localAudioPreview.src = "";
+      btnRerecord.style.display = "none";
+      recordTimer.textContent = "00:00";
+      recordBtnText.textContent = "开始录音";
+      startRecording();
+    });
+
+    // ================= 4. 回声发射表单控制 =================
+    const tabVoice = document.getElementById("tab-voice");
+    const tabText = document.getElementById("tab-text");
+    const voiceArea = document.getElementById("voice-composer-area");
+    const textArea = document.getElementById("text-composer-area");
+    const composerBadge = document.getElementById("composer-mode-badge");
+
+    tabVoice.addEventListener("click", () => {
+      state.composerType = "voice";
+      tabVoice.classList.add("active");
+      tabText.classList.remove("active");
+      voiceArea.style.display = "block";
+      textArea.style.display = "none";
+      composerBadge.textContent = "语音模式";
+    });
+
+    tabText.addEventListener("click", () => {
+      state.composerType = "text";
+      tabText.classList.add("active");
+      tabVoice.classList.remove("active");
+      voiceArea.style.display = "none";
+      textArea.style.display = "block";
+      composerBadge.textContent = "文字模式";
+    });
+
+    // 情绪单选按钮点击
+    const emotionBtns = document.querySelectorAll(".emotion-radio-btn");
+    emotionBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        emotionBtns.forEach(b => b.classList.remove("selected"));
+        btn.classList.add("selected");
+        state.selectedEmotion = btn.dataset.emotion;
+      });
+    });
+
+    // 文字输入字数统计
+    const textInput = document.getElementById("text-content-input");
+    const textCharCount = document.getElementById("text-char-count");
+    textInput.addEventListener("input", () => {
+      textCharCount.textContent = textInput.value.length;
+    });
+
+    // 发射回声
+    const btnSubmit = document.getElementById("btn-submit-echo");
+    btnSubmit.addEventListener("click", async () => {
+      const hideCountry = document.getElementById("hide-country-checkbox").checked;
+      const formData = new FormData();
+      formData.append("action", "create");
+      formData.append("user_id", state.userId);
+      formData.append("token", state.token);
+      formData.append("nickname", state.nickname);
+      formData.append("content_type", state.composerType);
+      formData.append("emotion", state.selectedEmotion);
+      formData.append("hide_country", hideCountry ? "1" : "0");
+
+      if (state.composerType === "voice") {
+        if (!state.recordingBlob) {
+          showToast("请先录制一段语音再发射");
+          return;
+        }
+        formData.append("file", state.recordingBlob, `voice_${Date.now()}.webm`);
+        formData.append("duration", state.recordingDuration);
+        formData.append("content", document.getElementById("voice-caption-input").value.trim());
+      } else {
+        const textVal = textInput.value.trim();
+        if (!textVal) {
+          showToast("请输入文字内容");
+          return;
+        }
+        formData.append("content", textVal);
+      }
+
+      btnSubmit.disabled = true;
+      btnSubmit.textContent = "正在穿透大气层上传中...";
+
+      try {
+        const res = await fetch("/api/echo", {
+          method: "POST",
+          body: formData,
+        });
+        const result = await res.json();
+        if (result.success) {
+          showToast("✨ 回声已成功发射至全球！");
+          // 重置表单
+          textInput.value = "";
+          textCharCount.textContent = "0";
+          document.getElementById("voice-caption-input").value = "";
+          state.recordingBlob = null;
+          state.recordingDuration = 0;
+          localAudioPreview.style.display = "none";
+          recordTimer.textContent = "00:00";
+          btnRerecord.style.display = "none";
+          recordBtnText.textContent = "开始录音";
+          loadEchoStream();
+        } else {
+          showToast(result.error || "发射失败");
+        }
+      } catch (err) {
+        showToast("发射请求失败，请检查网络");
+      } finally {
+        btnSubmit.disabled = false;
+        btnSubmit.textContent = "发送回声 🚀";
+      }
+    });
+
+    // ================= 5. 加载回声流与情绪天气 =================
+    async function loadEchoStream() {
+      const container = document.getElementById("echo-stream-container");
+      
+      const params = new URLSearchParams();
+      if (state.filterCountry !== "ALL") params.append("country", state.filterCountry);
+      if (state.filterType !== "all") params.append("type", state.filterType);
+      if (state.filterEmotion !== "all") params.append("emotion", state.filterEmotion);
+      params.append("sort", state.filterSort);
+      params.append("limit", "40");
+
+      try {
+        const res = await fetch(`/api/echo?${params.toString()}`);
+        const data = await res.json();
+
+        if (!data.success) {
+          container.innerHTML = `<div class="empty-state">信号衰减：${data.error}</div>`;
+          return;
+        }
+
+        // 识别访客自身国家
+        if (data.visitor_country) {
+          state.visitorCountry = data.visitor_country;
+          const cInfo = COUNTRY_COORDINATES[data.visitor_country] || { flag: "🛸", name: data.visitor_country };
+          document.getElementById("my-country-badge").textContent = `${cInfo.flag} ${data.visitor_country}`;
+        }
+
+        // 渲染情绪天气
+        renderMoodWeather(data.moods || []);
+
+        // 渲染 3D 地球点位
+        if (data.countries) {
+          updateGlobePoints(data.countries);
+        }
+
+        // 渲染留言列表
+        renderPosts(data.posts || []);
+
+      } catch (err) {
+        container.innerHTML = `<div class="empty-state">网络连接失败，请检查接口服务。</div>`;
+      }
+    }
+
+    // 渲染世界情绪天气面板
+    function renderMoodWeather(moodList) {
+      const container = document.getElementById("mood-container");
+      const summaryEl = document.getElementById("mood-summary");
+      container.innerHTML = "";
+
+      let totalCount = 0;
+      const moodCounts = {};
+      moodList.forEach(m => {
+        moodCounts[m.emotion] = m.count;
+        totalCount += m.count;
+      });
+
+      summaryEl.textContent = `全站共计 ${totalCount} 缕心声`;
+
+      Object.keys(EMOTION_MAP).forEach(key => {
+        const item = EMOTION_MAP[key];
+        const count = moodCounts[key] || 0;
+        const chip = document.createElement("div");
+        chip.className = `mood-chip ${state.filterEmotion === key ? "active" : ""}`;
+        chip.innerHTML = `<span>${item.icon} ${item.label}</span><span class="mood-count">${count}</span>`;
+        chip.addEventListener("click", () => {
+          if (state.filterEmotion === key) {
+            state.filterEmotion = "all";
+            chip.classList.remove("active");
+          } else {
+            state.filterEmotion = key;
+          }
+          loadEchoStream();
+        });
+        container.appendChild(chip);
+      });
+    }
+
+    // 渲染卡片列表
+    function renderPosts(posts) {
+      const container = document.getElementById("echo-stream-container");
+      if (!posts || posts.length === 0) {
+        container.innerHTML = `<div class="empty-state">当前维度未探测到回声，成为第一个发声者吧！</div>`;
+        return;
+      }
+
+      container.innerHTML = "";
+      posts.forEach(post => {
+        const card = document.createElement("div");
+        const isVoice = post.content_type === "voice";
+        card.className = `echo-card ${isVoice ? "voice-card" : "text-card"}`;
+
+        const countryInfo = COUNTRY_COORDINATES[post.country_code] || { flag: "🌐", name: post.country_code };
+        const emotionInfo = EMOTION_MAP[post.emotion] || { icon: "🌊", label: post.emotion };
+        const isMyPost = post.user_id === state.userId;
+
+        // 格式化时间
+        const timeAgo = formatTimeAgo(post.created_at);
+
+        let contentHTML = "";
+        if (isVoice) {
+          contentHTML = `
+            <div class="voice-player-bar" data-url="${post.media_url}">
+              <button class="btn-play-voice" title="播放语音">▶</button>
+              <div class="voice-wave-container">
+                <span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span>
+                <span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span>
+                <span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span>
+                <span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span>
+              </div>
+              <span class="voice-duration">${post.duration || 0}s</span>
+            </div>
+            ${post.content ? `<div class="echo-card-content">${escapeHTML(post.content)}</div>` : ""}
+          `;
+        } else {
+          contentHTML = `<div class="echo-card-content">${escapeHTML(post.content)}</div>`;
+        }
+
+        card.innerHTML = `
+          <div class="echo-card-header">
+            <div class="author-info">
+              <div class="author-avatar">${(post.nickname || "E")[0].toUpperCase()}</div>
+              <div class="author-meta">
+                <span class="author-name">${escapeHTML(post.nickname)}</span>
+                <span class="post-time">${timeAgo}</span>
+              </div>
+            </div>
+            <div class="badge-group">
+              <span class="country-tag">${countryInfo.flag} ${countryInfo.name}</span>
+              <span class="emotion-tag">${emotionInfo.icon} ${emotionInfo.label}</span>
+            </div>
+          </div>
+
+          ${contentHTML}
+
+          <div class="echo-card-footer">
+            <div class="action-group">
+              <button class="btn-action btn-like" data-id="${post.id}">
+                <span>❤️</span> <span class="like-num">${post.likes_count || 0}</span>
+              </button>
+              <button class="btn-action btn-comment" data-id="${post.id}">
+                <span>💬</span> <span>${post.comments_count || 0}</span>
+              </button>
+              <button class="btn-action btn-report" data-id="${post.id}">
+                <span>🚩</span> <span>举报</span>
+              </button>
+            </div>
+            <div>
+              ${isMyPost ? `<button class="btn-action btn-del" data-id="${post.id}">🗑️ 删除</button>` : ""}
+            </div>
+          </div>
+        `;
+
+        // 语音播放绑定
+        if (isVoice && post.media_url) {
+          const playBtn = card.querySelector(".btn-play-voice");
+          const playerBar = card.querySelector(".voice-player-bar");
+          playBtn.addEventListener("click", () => handlePlayAudio(post.media_url, playBtn, playerBar));
+        }
+
+        // 点赞绑定
+        const likeBtn = card.querySelector(".btn-like");
+        likeBtn.addEventListener("click", () => handleLikePost(post.id, likeBtn));
+
+        // 评论弹窗绑定
+        const commentBtn = card.querySelector(".btn-comment");
+        commentBtn.addEventListener("click", () => openCommentModal(post));
+
+        // 举报绑定
+        const reportBtn = card.querySelector(".btn-report");
+        reportBtn.addEventListener("click", () => openReportModal(post.id));
+
+        // 本人删除绑定
+        if (isMyPost) {
+          const delBtn = card.querySelector(".btn-del");
+          delBtn.addEventListener("click", () => handleDeletePost(post.id));
+        }
+
+        container.appendChild(card);
+      });
+    }
+
+    // ================= 6. 交互处理：播放、点赞、删除 =================
+    function handlePlayAudio(url, btn, bar) {
+      if (state.currentPlayingAudio) {
+        state.currentPlayingAudio.audio.pause();
+        state.currentPlayingAudio.btn.textContent = "▶";
+        state.currentPlayingAudio.bar.classList.remove("playing");
+        if (state.currentPlayingAudio.url === url) {
+          state.currentPlayingAudio = null;
+          return;
+        }
+      }
+
+      const audio = new Audio(url);
+      btn.textContent = "⏸";
+      bar.classList.add("playing");
+      state.currentPlayingAudio = { audio, btn, bar, url };
+
+      audio.play().catch(e => {
+        showToast("音频加载失败或格式不兼容");
+        btn.textContent = "▶";
+        bar.classList.remove("playing");
+      });
+
+      audio.onended = () => {
+        btn.textContent = "▶";
+        bar.classList.remove("playing");
+        state.currentPlayingAudio = null;
+      };
+    }
+
+    async function handleLikePost(postId, btn) {
+      try {
+        const res = await fetch("/api/echo", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "like",
+            user_id: state.userId,
+            token: state.token,
+            post_id: postId,
+          })
+        });
+        const d = await res.json();
+        if (d.success) {
+          btn.querySelector(".like-num").textContent = d.likes_count;
+          if (d.liked) {
+            btn.classList.add("liked");
+          } else {
+            btn.classList.remove("liked");
+          }
+        }
+      } catch (err) {
+        showToast("点赞失败");
+      }
+    }
+
+    async function handleDeletePost(postId) {
+      if (!confirm("确定要永久销毁这条回声吗？若包含语音，将同步从远端物理删除。")) return;
+
+      try {
+        const res = await fetch(`/api/echo?id=${postId}&user_id=${state.userId}&token=${state.token}`, {
+          method: "DELETE",
+          headers: {
+            "x-user-id": state.userId,
+            "x-user-token": state.token,
+          }
+        });
+        const d = await res.json();
+        if (d.success) {
+          showToast("回声已彻底销毁");
+          loadEchoStream();
+        } else {
+          showToast(d.error || "删除失败");
+        }
+      } catch (err) {
+        showToast("网络请求异常");
+      }
+    }
+
+    // ================= 7. 评论回复弹窗控制 =================
+    const commentModal = document.getElementById("comment-modal");
+    const commentInput = document.getElementById("comment-input");
+    const btnSubmitComment = document.getElementById("btn-submit-comment");
+
+    function openCommentModal(post) {
+      state.commentingPostId = post.id;
+      document.getElementById("comment-original-quote").textContent = 
+        `"${(post.content || '🎙️ 语音回声').slice(0, 80)}..." — ${post.nickname}`;
+      commentInput.value = "";
+      commentModal.classList.add("active");
+      loadComments(post.id);
+    }
+
+    document.getElementById("btn-close-comments").addEventListener("click", () => {
+      commentModal.classList.remove("active");
+    });
+
+    async function loadComments(postId) {
+      const container = document.getElementById("modal-comments-container");
+      container.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 0.8rem;">接收回复中...</div>`;
+      try {
+        const res = await fetch(`/api/echo?post_id=${postId}`);
+        const d = await res.json();
+        if (d.success && d.comments && d.comments.length > 0) {
+          container.innerHTML = d.comments.map(c => `
+            <div class="comment-item">
+              <div class="comment-item-header">
+                <strong>${escapeHTML(c.nickname)} (${c.country_code})</strong>
+                <span>${formatTimeAgo(c.created_at)}</span>
+              </div>
+              <div>${escapeHTML(c.content)}</div>
+            </div>
+          `).join("");
+        } else {
+          container.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 0.8rem;">暂无回复</div>`;
+        }
+      } catch (e) {
+        container.innerHTML = `<div style="text-align: center; color: var(--danger); font-size: 0.8rem;">加载回复失败</div>`;
+      }
+    }
+
+    btnSubmitComment.addEventListener("click", async () => {
+      const content = commentInput.value.trim();
+      if (!content) return;
+      btnSubmitComment.disabled = true;
+
+      try {
+        const res = await fetch("/api/echo", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "comment",
+            user_id: state.userId,
+            token: state.token,
+            nickname: state.nickname,
+            post_id: state.commentingPostId,
+            content: content,
+          })
+        });
+        const d = await res.json();
+        if (d.success) {
+          commentInput.value = "";
+          showToast("回复已送达");
+          loadComments(state.commentingPostId);
+          loadEchoStream();
+        } else {
+          showToast(d.error || "回复失败");
+        }
+      } catch (err) {
+        showToast("回复网络故障");
+      } finally {
+        btnSubmitComment.disabled = false;
+      }
+    });
+
+    // ================= 8. 举报弹窗 =================
+    const reportModal = document.getElementById("report-modal");
+    function openReportModal(postId) {
+      state.reportingPostId = postId;
+      reportModal.classList.add("active");
+    }
+
+    document.getElementById("btn-close-report").addEventListener("click", () => {
+      reportModal.classList.remove("active");
+    });
+
+    document.getElementById("btn-confirm-report").addEventListener("click", async () => {
+      const selectVal = document.getElementById("report-reason-select").value;
+      const detailVal = document.getElementById("report-reason-detail").value.trim();
+      const reason = detailVal ? `${selectVal}: ${detailVal}` : selectVal;
+
+      try {
+        const res = await fetch("/api/echo", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "report",
+            user_id: state.userId,
+            token: state.token,
+            post_id: state.reportingPostId,
+            reason: reason,
+          })
+        });
+        const d = await res.json();
+        if (d.success) {
+          showToast("已收到举报，社区巡查系统将复核该内容");
+          reportModal.classList.remove("active");
+        } else {
+          showToast(d.error || "举报失败");
+        }
+      } catch (e) {
+        showToast("提交失败");
+      }
+    });
+
+    // ================= 9. 匿名凭据导入导出 =================
+    const identityModal = document.getElementById("identity-modal");
+    document.getElementById("identity-btn").addEventListener("click", () => {
+      document.getElementById("input-nickname").value = state.nickname;
+      const exportObj = { id: state.userId, token: state.token, nickname: state.nickname };
+      document.getElementById("identity-export-text").value = btoa(JSON.stringify(exportObj));
+      identityModal.classList.add("active");
+    });
+
+    document.getElementById("btn-close-identity").addEventListener("click", () => {
+      identityModal.classList.remove("active");
+    });
+
+    document.getElementById("btn-save-nickname").addEventListener("click", () => {
+      const val = document.getElementById("input-nickname").value.trim();
+      updateNickname(val);
+    });
+
+    document.getElementById("btn-copy-identity").addEventListener("click", () => {
+      const text = document.getElementById("identity-export-text").value;
+      navigator.clipboard.writeText(text).then(() => {
+        showToast("身份恢复码已复制到剪贴板");
+      });
+    });
+
+    document.getElementById("btn-import-identity").addEventListener("click", () => {
+      const text = document.getElementById("identity-import-text").value.trim();
+      if (!text) return;
+      try {
+        const parsed = JSON.parse(atob(text));
+        if (parsed.id && parsed.token) {
+          localStorage.setItem("we_user_id", parsed.id);
+          localStorage.setItem("we_token", parsed.token);
+          localStorage.setItem("we_nickname", parsed.nickname || "回声旅人");
+          showToast("身份已成功恢复！正在刷新...");
+          setTimeout(() => location.reload(), 1200);
+        } else {
+          showToast("凭据格式不正确");
+        }
+      } catch (err) {
+        showToast("恢复码解析失败，请检查是否完整");
+      }
+    });
+
+    // ================= 10. 筛选与排序事件监听 =================
+    document.querySelectorAll(".filter-btn[data-type]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".filter-btn[data-type]").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        state.filterType = btn.dataset.type;
+        loadEchoStream();
+      });
+    });
+
+    document.querySelectorAll(".filter-btn[data-sort]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".filter-btn[data-sort]").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        state.filterSort = btn.dataset.sort;
+        loadEchoStream();
+      });
+    });
+
+    document.getElementById("btn-clear-country").addEventListener("click", () => {
+      state.filterCountry = "ALL";
+      updateActiveCountryUI();
+      if (state.globe) state.globe.pointOfView({ lat: 20, lng: 0, altitude: 2.4 }, 1000);
+      loadEchoStream();
+    });
+
+    document.getElementById("btn-refresh-stream").addEventListener("click", () => {
+      loadEchoStream();
+      showToast("已刷新回声流");
+    });
+
+    // ================= 工具函数 =================
+    function escapeHTML(str) {
+      if (!str) return "";
+      return str.replace(/[&<>'"]/g, 
+        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+    }
+
+    function formatTimeAgo(dateStr) {
+      if (!dateStr) return "刚刚";
+      const past = new Date(dateStr.endsWith("Z") ? dateStr : dateStr + "Z").getTime();
+      const diffSecs = Math.max(0, Math.floor((Date.now() - past) / 1000));
+      if (diffSecs < 60) return "刚刚";
+      if (diffSecs < 3600) return `${Math.floor(diffSecs / 60)} 分钟前`;
+      if (diffSecs < 86400) return `${Math.floor(diffSecs / 3600)} 小时前`;
+      return `${Math.floor(diffSecs / 86400)} 天前`;
+    }
+
+    // ================= 页面初始化启动 =================
+    window.addEventListener("DOMContentLoaded", () => {
+      initIdentity();
+      initGlobe();
+      loadEchoStream();
+    });
+  </script>
+</body>
+</html>
