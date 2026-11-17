@@ -1,4 +1,5 @@
--- WORLD ECHO (世界回声) - D1 Database Initial Schema V1.0
+-- WORLD ECHO (世界回声) - D1 Database Initial Schema V1.1
+-- Note: SQLite CURRENT_TIMESTAMP defaults store timestamps in UTC format ('YYYY-MM-DD HH:MM:SS').
 
 -- 1. 匿名用户表（渐进式创建，浏览器存原始 token，数据库只存 hash）
 CREATE TABLE IF NOT EXISTS users (
@@ -6,7 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
   nickname TEXT NOT NULL,
   token_hash TEXT NOT NULL UNIQUE,
   status TEXT DEFAULT 'active',          -- active / banned
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP -- UTC timezone
 );
 
 -- 2. 全球回声主表（合并文字、语音元数据与情绪标签）
@@ -25,10 +26,10 @@ CREATE TABLE IF NOT EXISTS posts (
   comments_count INTEGER DEFAULT 0,
   reports_count INTEGER DEFAULT 0,
   status TEXT DEFAULT 'published',       -- published / pending / hidden / deleted
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP -- UTC timezone
 );
 
--- 3. 评论回复表
+-- 3. 评论回复表（外键关联 posts.id，级联删除）
 CREATE TABLE IF NOT EXISTS comments (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   post_id INTEGER NOT NULL,
@@ -36,25 +37,28 @@ CREATE TABLE IF NOT EXISTS comments (
   nickname TEXT NOT NULL,
   country_code TEXT DEFAULT 'UN',
   content TEXT NOT NULL,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP, -- UTC timezone
+  FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
 );
 
--- 4. 点赞唯一约束表（防重复刷赞）
+-- 4. 点赞唯一约束表（防重复刷赞，外键关联 posts.id，级联删除）
 CREATE TABLE IF NOT EXISTS likes (
   user_id TEXT NOT NULL,
   post_id INTEGER NOT NULL,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE(user_id, post_id)
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP, -- UTC timezone
+  UNIQUE(user_id, post_id),
+  FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
 );
 
--- 5. 举报记录表
+-- 5. 举报记录表（外键关联 posts.id，级联删除）
 CREATE TABLE IF NOT EXISTS reports (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   post_id INTEGER NOT NULL,
   reporter_id TEXT NOT NULL,
   reason TEXT NOT NULL,
   status TEXT DEFAULT 'pending',         -- pending / resolved
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP, -- UTC timezone
+  FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
 );
 
 -- 核心查询索引
@@ -62,3 +66,5 @@ CREATE INDEX IF NOT EXISTS idx_posts_country ON posts(country_code, status, crea
 CREATE INDEX IF NOT EXISTS idx_posts_status_id ON posts(status, id DESC);
 CREATE INDEX IF NOT EXISTS idx_posts_emotion ON posts(emotion, status);
 CREATE INDEX IF NOT EXISTS idx_comments_post ON comments(post_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_likes_user_post ON likes(user_id, post_id);
+CREATE INDEX IF NOT EXISTS idx_reports_post ON reports(post_id, status);
