@@ -3,21 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WORLD ECHO | 世界回声 — 全球匿名声音与文字社区</title>
+  <title>WORLD ECHO | 世界回声 — 深夜天文台</title>
   <meta name="description" content="深夜静谧，听见世界另一端的心跳，留下穿越经纬的回声。高级极简、实时昼夜光影融合、治愈系全球匿名社区。">
 
-  <!-- 引入 Google Fonts: Inter & Noto Sans SC -->
+  <!-- Open Graph -->
+  <meta property="og:title" content="WORLD ECHO | 世界回声 — 深夜天文台">
+  <meta property="og:description" content="在地球的每一个角落，听见世界另一端的心跳，留下穿越经纬的回声。">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg">
+
+  <!-- Inline SVG Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%230B0F19' stroke='%237DD3FC' stroke-width='3'/%3E%3Ccircle cx='50' cy='50' r='30' fill='none' stroke='%2394A3B8' stroke-width='1.5' stroke-dasharray='6 4'/%3E%3Ccircle cx='50' cy='50' r='6' fill='%23FDE68A'/%3E%3C/svg%3E">
+
+  <!-- Google Fonts: Inter & Noto Sans SC -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Noto+Sans+SC:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-  <!-- 引入 Three.js 与 Globe.gl CDN -->
+  <!-- Three.js & Globe.gl CDN -->
   <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
   <script src="https://unpkg.com/globe.gl@2.32.0/dist/globe.gl.min.js"></script>
 
   <style>
     :root {
-      /* 深夜静谧极简色彩规范 */
+      /* 深夜天文台极简静谧色谱 */
       --bg-space: #0B0F19;
       --bg-surface: rgba(17, 24, 39, 0.65);
       --bg-surface-hover: rgba(255, 255, 255, 0.06);
@@ -25,20 +34,30 @@
       --border-subtle: rgba(255, 255, 255, 0.08);
       --border-hover: rgba(255, 255, 255, 0.18);
       --shadow-soft: 0 8px 32px 0 rgba(0, 0, 0, 0.28);
-      
-      /* 文字与层级 */
+      --shadow-glow: 0 0 40px rgba(125, 211, 252, 0.12);
+
+      /* Typography colors */
       --text-main: #F8FAFC;
       --text-muted: #94A3B8;
       --text-dim: #64748B;
-      
-      /* 静谧治愈辅助色系（低饱和度） */
-      --accent-voice: #7DD3FC;      /* 柔和天青 */
-      --accent-text: #94A3B8;       /* 霜灰银 */
-      --accent-sun: #FDE68A;        /* 晨曦月白淡金 */
-      --accent-danger: #F87171;     /* 哑光柔红 */
+
+      /* Accents */
+      --accent-voice: #7DD3FC;
+      --accent-text: #94A3B8;
+      --accent-sun: #FDE68A;
+      --accent-danger: #F87171;
+
+      /* Radii */
       --radius-sm: 8px;
       --radius-md: 14px;
+      --radius-lg: 20px;
       --radius-full: 9999px;
+
+      /* Typography Scale (Explicit requirements) */
+      --font-title: 1.5rem;      /* 24px */
+      --font-subtitle: 1.1rem;   /* 17.6px */
+      --font-body: 0.875rem;     /* 14px */
+      --font-caption: 0.75rem;   /* 12px */
     }
 
     * {
@@ -55,10 +74,62 @@
       min-height: 100vh;
       overflow-x: hidden;
       line-height: 1.6;
-      background-image: radial-gradient(circle at 50% 0%, rgba(30, 41, 59, 0.3) 0%, transparent 65%);
+      background-image: radial-gradient(circle at 50% 0%, rgba(30, 41, 59, 0.25) 0%, transparent 70%);
     }
 
-    /* 细线 SVG 图标通用规范 */
+    /* Keyframe Animations */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes heroFloatIn {
+      0% { opacity: 0; transform: translateY(28px) scale(0.97); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes chevronBounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.45; }
+      50% { transform: translateX(-50%) translateY(8px); opacity: 0.95; }
+    }
+
+    @keyframes shimmer {
+      0% { background-position: -400px 0; }
+      100% { background-position: 400px 0; }
+    }
+
+    @keyframes recordBreathe {
+      0%, 100% { border-color: rgba(239, 68, 68, 0.3); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.15); }
+      50% { border-color: rgba(239, 68, 68, 0.7); box-shadow: 0 0 16px 2px rgba(239, 68, 68, 0.25); }
+    }
+
+    @keyframes waveGentle {
+      0% { height: 18%; }
+      100% { height: 90%; }
+    }
+
+    @keyframes fabPulse {
+      0%, 100% { box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(125, 211, 252, 0.15); }
+      50% { box-shadow: 0 8px 36px rgba(0, 0, 0, 0.6), 0 0 32px rgba(125, 211, 252, 0.35); }
+    }
+
+    @keyframes slideUpSheet {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    /* Typography Hierarchy Classes */
+    .title-lg { font-size: var(--font-title); font-weight: 600; letter-spacing: 0.04em; line-height: 1.35; color: var(--text-main); }
+    .subtitle-md { font-size: var(--font-subtitle); font-weight: 500; letter-spacing: 0.03em; line-height: 1.45; color: var(--text-muted); }
+    .body-regular { font-size: var(--font-body); font-weight: 400; letter-spacing: 0.02em; line-height: 1.7; color: #E2E8F0; }
+    .caption-sm { font-size: var(--font-caption); font-weight: 300; letter-spacing: 0.04em; color: var(--text-dim); }
+
+    /* Icons */
     .icon {
       width: 16px;
       height: 16px;
@@ -71,115 +142,18 @@
       vertical-align: middle;
       flex-shrink: 0;
     }
-
     .icon-sm { width: 14px; height: 14px; stroke-width: 1.5; }
     .icon-lg { width: 18px; height: 18px; stroke-width: 1.6; }
+    .icon-xl { width: 22px; height: 22px; stroke-width: 1.5; }
 
-    /* 顶部导航条（无缝毛玻璃） */
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      background: rgba(11, 15, 25, 0.75);
-      border-bottom: 1px solid var(--border-subtle);
-      padding: 0.9rem 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1.5rem;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .brand-mark {
-      width: 32px;
-      height: 32px;
-      border-radius: var(--radius-sm);
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--border-subtle);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--accent-voice);
-      transition: background 0.3s ease;
-    }
-
-    .brand-text h1 {
-      font-size: 1rem;
-      font-weight: 500;
-      letter-spacing: 0.12em;
-      color: var(--text-main);
-    }
-
-    .brand-text p {
-      font-size: 0.72rem;
-      color: var(--text-dim);
-      letter-spacing: 0.04em;
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    /* 语言切换菜单 */
-    .lang-select {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-muted);
-      padding: 0.35rem 0.75rem;
-      border-radius: var(--radius-full);
-      font-size: 0.8rem;
-      font-family: inherit;
-      outline: none;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .lang-select:hover, .lang-select:focus {
-      background: var(--bg-surface-hover);
-      border-color: var(--border-hover);
-      color: var(--text-main);
-    }
-
-    .user-pill {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--border-subtle);
-      padding: 0.35rem 0.9rem;
-      border-radius: var(--radius-full);
-      font-size: 0.8rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: all 0.2s ease;
-      white-space: nowrap;
-    }
-
-    .user-pill:hover {
-      background: var(--bg-surface-hover);
-      border-color: var(--border-hover);
-      color: var(--text-main);
-    }
-
-    /* 3D 地球视窗 */
-    .globe-section {
+    /* ================= 1. IMMERSIVE HERO LANDING (100vh) ================= */
+    .hero-section {
       position: relative;
       width: 100%;
-      height: 480px;
+      height: 100vh;
+      min-height: 560px;
       overflow: hidden;
-      background: radial-gradient(circle at center, #0F1626 0%, #0B0F19 85%);
-      border-bottom: 1px solid var(--border-subtle);
+      background: radial-gradient(ellipse at center 45%, #0F1626 0%, #0B0F19 75%);
     }
 
     #globe-container {
@@ -187,150 +161,164 @@
       height: 100%;
       cursor: grab;
     }
+    #globe-container:active { cursor: grabbing; }
 
-    #globe-container:active {
-      cursor: grabbing;
+    /* Hero centered floating title */
+    .hero-floating-card {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      text-align: center;
+      z-index: 10;
+      animation: heroFloatIn 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      padding: 1.5rem 2.5rem;
+      border-radius: var(--radius-lg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: rgba(11, 15, 25, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
     }
 
-    /* 太阳与昼夜天象浮动条 */
-    .solar-weather-strip {
+    .hero-brand-title {
+      font-size: 2.75rem;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      color: var(--text-main);
+      text-shadow: 0 0 50px rgba(125, 211, 252, 0.2), 0 2px 24px rgba(0, 0, 0, 0.75);
+    }
+
+    .hero-brand-sub {
+      font-size: 1.1rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      margin-top: 0.6rem;
+      text-shadow: 0 2px 16px rgba(0, 0, 0, 0.6);
+    }
+
+    /* Minimal Floating Pills on Hero */
+    .hero-pill-bar {
       position: absolute;
-      top: 1.25rem;
-      left: 1.5rem;
-      right: 5.5rem;
+      top: 1.5rem;
+      left: 1.75rem;
+      right: 1.75rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
-      gap: 0.6rem;
+      gap: 0.75rem;
       pointer-events: none;
-      z-index: 10;
+      z-index: 20;
     }
 
-    .solar-badge-capsule {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: rgba(15, 23, 42, 0.65);
-      border: 1px solid var(--border-subtle);
-      box-shadow: var(--shadow-soft);
-      padding: 0.4rem 0.9rem;
-      border-radius: var(--radius-full);
-      font-size: 0.78rem;
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      pointer-events: auto;
-      color: var(--text-muted);
-    }
-
-    .subsolar-coord {
-      color: var(--accent-sun);
-      font-weight: 500;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .day-night-toggle-group {
+    .hero-pill-left, .hero-pill-right {
       display: flex;
       align-items: center;
-      gap: 0.35rem;
+      gap: 0.5rem;
+      flex-wrap: wrap;
       pointer-events: auto;
     }
 
-    .dn-pill {
-      background: rgba(15, 23, 42, 0.65);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-dim);
-      padding: 0.35rem 0.75rem;
-      border-radius: var(--radius-full);
-      font-size: 0.75rem;
-      cursor: pointer;
+    .pill-capsule {
       display: inline-flex;
       align-items: center;
-      gap: 0.35rem;
-      transition: all 0.2s ease;
-      backdrop-filter: blur(16px);
-      font-family: inherit;
-    }
-
-    .dn-pill:hover {
-      background: var(--bg-surface-hover);
+      gap: 0.45rem;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--border-subtle);
+      padding: 0.35rem 0.85rem;
+      border-radius: var(--radius-full);
+      font-size: var(--font-caption);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       color: var(--text-muted);
+      box-shadow: var(--shadow-soft);
+      transition: all 0.2s ease;
+      letter-spacing: 0.03em;
     }
 
-    .dn-pill.active {
+    .pill-capsule.interactive {
+      cursor: pointer;
+      user-select: none;
+    }
+    .pill-capsule.interactive:hover {
+      background: var(--bg-surface-hover);
+      color: var(--text-main);
+      border-color: var(--border-hover);
+    }
+    .pill-capsule.interactive.active {
       background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.22);
+      border-color: rgba(255, 255, 255, 0.24);
       color: var(--text-main);
     }
 
-    .dn-count {
-      opacity: 0.65;
-      font-size: 0.7rem;
-      font-variant-numeric: tabular-nums;
-    }
+    .subsolar-coord { color: var(--accent-sun); font-weight: 500; font-variant-numeric: tabular-nums; }
+    .dn-count { opacity: 0.7; font-size: 0.7rem; font-variant-numeric: tabular-nums; }
 
-    /* 地球左下角图例胶囊 */
-    .globe-legend-capsule {
+    /* Animated Scroll Down Indicator (Gentle Chevron) */
+    .scroll-indicator-wrap {
       position: absolute;
-      bottom: 1.25rem;
-      left: 1.5rem;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      animation: chevronBounce 2.5s ease-in-out infinite;
+      cursor: pointer;
+      color: var(--text-dim);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+      transition: color 0.2s ease;
+      user-select: none;
+    }
+    .scroll-indicator-wrap:hover { color: var(--accent-voice); }
+    .scroll-indicator-text { font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 300; }
+
+    /* Globe Legend Bottom-Left */
+    .globe-legend-wrap {
+      position: absolute;
+      bottom: 1.5rem;
+      left: 1.75rem;
       display: inline-flex;
       align-items: center;
       gap: 0.75rem;
       background: rgba(15, 23, 42, 0.65);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(20px);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-full);
-      padding: 0.4rem 1rem;
-      font-size: 0.75rem;
+      padding: 0.35rem 0.95rem;
+      font-size: var(--font-caption);
       color: var(--text-dim);
+      z-index: 20;
       box-shadow: var(--shadow-soft);
       pointer-events: auto;
-      user-select: none;
     }
-
-    .legend-item {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    .legend-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      display: inline-block;
-    }
-
+    .legend-item { display: inline-flex; align-items: center; gap: 0.35rem; }
+    .legend-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
     .legend-dot.voice { background: var(--accent-voice); }
     .legend-dot.text { background: var(--accent-text); }
     .legend-dot.sun { background: var(--accent-sun); }
+    .legend-divider { width: 1px; height: 10px; background: rgba(255, 255, 255, 0.1); }
 
-    .legend-divider {
-      width: 1px;
-      height: 10px;
-      background: rgba(255, 255, 255, 0.1);
-    }
-
-    /* 地球右侧悬浮整合式工具栏 */
-    .globe-toolbar {
+    /* Globe Toolbar Bottom-Right */
+    .globe-toolbar-wrap {
       position: absolute;
-      top: 1.25rem;
-      right: 1.5rem;
+      bottom: 1.5rem;
+      right: 1.75rem;
       display: flex;
-      flex-direction: column;
       align-items: center;
+      gap: 0.25rem;
       background: rgba(15, 23, 42, 0.65);
       backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-full);
       padding: 0.25rem;
+      z-index: 20;
       box-shadow: var(--shadow-soft);
-      z-index: 10;
     }
-
     .tool-btn {
       background: transparent;
       border: none;
@@ -344,84 +332,136 @@
       cursor: pointer;
       transition: all 0.2s ease;
     }
+    .tool-btn:hover { background: var(--bg-surface-hover); color: var(--text-main); }
+    .tool-divider { width: 1px; height: 16px; background: rgba(255, 255, 255, 0.08); margin: 0 2px; }
 
-    .tool-btn:hover {
+    /* ================= 2. STICKY HEADER & CONTENT ON SCROLL ================= */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      background: rgba(11, 15, 25, 0.85);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0.8rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.25rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .brand-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: inherit;
+    }
+    .brand-icon-box {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-voice);
+    }
+    .brand-meta h1 { font-size: 0.95rem; font-weight: 600; letter-spacing: 0.12em; color: var(--text-main); }
+    .brand-meta p { font-size: 0.68rem; color: var(--text-dim); letter-spacing: 0.04em; }
+
+    .header-right { display: flex; align-items: center; gap: 0.75rem; }
+
+    .lang-dropdown {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      padding: 0.35rem 0.75rem;
+      border-radius: var(--radius-full);
+      font-size: var(--font-caption);
+      font-family: inherit;
+      outline: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .lang-dropdown:hover, .lang-dropdown:focus {
       background: var(--bg-surface-hover);
+      border-color: var(--border-hover);
       color: var(--text-main);
     }
 
-    .tool-divider {
-      width: 16px;
-      height: 1px;
-      background: rgba(255, 255, 255, 0.08);
-      margin: 2px 0;
+    .identity-pill-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-subtle);
+      padding: 0.35rem 0.85rem;
+      border-radius: var(--radius-full);
+      font-size: var(--font-caption);
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
     }
+    .identity-pill-btn:hover { background: var(--bg-surface-hover); border-color: var(--border-hover); color: var(--text-main); }
 
-    /* 主体容器（留白呼吸感） */
-    .main-container {
-      max-width: 1280px;
+    /* ================= MAIN CONTAINER (Clean two-column + whitespace) ================= */
+    .content-anchor { scroll-margin-top: 60px; }
+
+    .main-grid {
+      max-width: 1320px;
       margin: 0 auto;
-      padding: 2.5rem 1.5rem;
+      padding: 3.5rem 2rem 4rem;
       display: grid;
-      grid-template-columns: 390px 1fr;
-      gap: 2rem;
+      grid-template-columns: 360px 1fr;
+      gap: 2.75rem;
+      align-items: start;
     }
 
-    @media (max-width: 1024px) {
-      .globe-section { height: 380px; }
-      .solar-weather-strip { left: 1rem; right: 4rem; top: 0.8rem; }
-      .main-container {
-        grid-template-columns: 1fr;
-        padding: 1.5rem 1rem;
-      }
-    }
-
-    /* 高级毛玻璃面板 */
-    .glass-panel {
+    /* Glass Panel */
+    .glass-card {
       background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
-      padding: 1.4rem;
+      padding: 1.5rem;
       box-shadow: var(--shadow-soft);
-      transition: border-color 0.3s ease;
+      transition: border-color 0.25s ease;
     }
+    .glass-card:hover { border-color: var(--border-hover); }
 
-    .glass-panel:hover {
-      border-color: var(--border-hover);
-    }
-
-    .panel-header {
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--text-main);
+    .panel-headline {
       margin-bottom: 1.2rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      letter-spacing: 0.02em;
     }
 
-    .panel-sub {
-      font-size: 0.75rem;
-      color: var(--text-dim);
-      font-weight: 400;
+    /* Sidebar Structure */
+    .observatory-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
     }
 
-    /* 世界情绪天气（静谧低饱和胶囊） */
-    .mood-grid {
+    /* Mood Weather Grid */
+    .mood-capsule-grid {
       display: flex;
       flex-wrap: wrap;
       gap: 0.45rem;
     }
 
-    .mood-chip {
+    .mood-chip-tag {
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--border-subtle);
-      padding: 0.3rem 0.65rem;
+      padding: 0.32rem 0.65rem;
       border-radius: var(--radius-full);
-      font-size: 0.78rem;
+      font-size: var(--font-caption);
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -430,346 +470,139 @@
       transition: all 0.2s ease;
       user-select: none;
     }
+    .mood-chip-tag:hover { background: var(--bg-surface-hover); color: var(--text-main); border-color: var(--border-hover); }
+    .mood-chip-tag.active { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.28); color: var(--text-main); }
+    .mood-chip-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .mood-chip-num { font-size: 0.7rem; color: var(--text-dim); font-variant-numeric: tabular-nums; }
 
-    .mood-chip:hover {
-      background: var(--bg-surface-hover);
-      color: var(--text-main);
-      border-color: var(--border-hover);
-    }
-
-    .mood-chip.active {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.28);
-      color: var(--text-main);
-    }
-
-    .mood-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .mood-count {
-      font-size: 0.7rem;
-      color: var(--text-dim);
-      font-variant-numeric: tabular-nums;
-    }
-
-    /* 回声发射台 */
-    .composer-switch {
-      display: flex;
-      background: rgba(0, 0, 0, 0.25);
+    /* Observatory Info Card in Sidebar */
+    .observatory-info-card {
+      background: rgba(18, 25, 42, 0.4);
       border: 1px solid var(--border-subtle);
-      padding: 0.2rem;
-      border-radius: var(--radius-sm);
-      margin-bottom: 1.2rem;
-    }
-
-    .composer-tab {
-      flex: 1;
-      text-align: center;
-      padding: 0.45rem;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      font-weight: 500;
-      cursor: pointer;
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      font-size: var(--font-caption);
       color: var(--text-dim);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.4rem;
-      transition: all 0.2s ease;
+      line-height: 1.75;
     }
+    .observatory-info-card strong { color: var(--text-muted); font-weight: 500; }
 
-    .composer-tab.active {
-      background: rgba(255, 255, 255, 0.07);
-      color: var(--text-main);
-    }
-
-    .form-group {
-      margin-bottom: 1.1rem;
-    }
-
-    label {
-      display: block;
-      font-size: 0.78rem;
-      color: var(--text-dim);
-      margin-bottom: 0.45rem;
-      font-weight: 400;
-    }
-
-    textarea, input[type="text"] {
-      width: 100%;
-      background: rgba(0, 0, 0, 0.2);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-sm);
-      padding: 0.75rem;
-      color: var(--text-main);
-      font-size: 0.88rem;
-      font-family: inherit;
-      outline: none;
-      transition: border-color 0.2s ease, background 0.2s ease;
-    }
-
-    textarea:focus, input[type="text"]:focus {
-      border-color: rgba(255, 255, 255, 0.25);
-      background: rgba(0, 0, 0, 0.35);
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 96px;
-    }
-
-    .char-count {
-      text-align: right;
-      font-size: 0.7rem;
-      color: var(--text-dim);
-      margin-top: 0.25rem;
-      font-variant-numeric: tabular-nums;
-    }
-
-    /* 录音机区域（治愈轻量微光） */
-    .recorder-box {
-      background: rgba(0, 0, 0, 0.2);
-      border: 1px dashed var(--border-subtle);
-      border-radius: var(--radius-sm);
-      padding: 1.4rem 1rem;
-      text-align: center;
-      margin-bottom: 1.1rem;
-    }
-
-    .record-timer {
-      font-size: 1.6rem;
-      font-weight: 400;
-      font-variant-numeric: tabular-nums;
-      color: var(--text-main);
-      letter-spacing: 0.08em;
-      margin: 0.4rem 0 0.8rem;
-    }
-
-    .record-actions {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .btn-record {
-      background: rgba(185, 28, 28, 0.15);
-      border: 1px solid rgba(239, 68, 68, 0.25);
-      color: #FCA5A5;
-      padding: 0.5rem 1.25rem;
-      border-radius: var(--radius-full);
-      font-size: 0.82rem;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-family: inherit;
-      transition: all 0.25s ease;
-    }
-
-    .btn-record:hover {
-      background: rgba(185, 28, 28, 0.25);
-      border-color: rgba(239, 68, 68, 0.4);
-    }
-
-    .btn-record.recording {
-      animation: record-breathe 2s infinite ease-in-out;
-      background: rgba(185, 28, 28, 0.35);
-    }
-
-    @keyframes record-breathe {
-      0%, 100% { border-color: rgba(239, 68, 68, 0.3); opacity: 0.85; }
-      50% { border-color: rgba(239, 68, 68, 0.7); opacity: 1; }
-    }
-
-    .audio-preview {
-      width: 100%;
-      margin-top: 1rem;
-      display: none;
-      filter: invert(0.85) hue-rotate(180deg);
-      opacity: 0.8;
-    }
-
-    /* 情绪选择矩阵 */
-    .emotion-select-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.4rem;
-      margin-bottom: 1.1rem;
-    }
-
-    .emotion-select-item {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-sm);
-      padding: 0.45rem 0.25rem;
-      text-align: center;
-      font-size: 0.78rem;
-      cursor: pointer;
-      color: var(--text-dim);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.35rem;
-      transition: all 0.2s ease;
-    }
-
-    .emotion-select-item:hover {
-      background: var(--bg-surface-hover);
-      color: var(--text-muted);
-    }
-
-    .emotion-select-item.selected {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: rgba(255, 255, 255, 0.24);
-      color: var(--text-main);
-    }
-
-    .checkbox-row {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.78rem;
-      color: var(--text-dim);
-      cursor: pointer;
-      margin-bottom: 1.2rem;
-      user-select: none;
-    }
-
-    /* 极简按钮 */
-    .btn-submit {
-      width: 100%;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: var(--text-main);
-      padding: 0.75rem;
-      border-radius: var(--radius-sm);
-      font-weight: 500;
-      font-size: 0.88rem;
-      font-family: inherit;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      transition: all 0.25s ease;
-    }
-
-    .btn-submit:hover:not(:disabled) {
-      background: rgba(255, 255, 255, 0.14);
-      border-color: rgba(255, 255, 255, 0.28);
-    }
-
-    .btn-submit:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
-
-    /* 右侧信息流导航条 */
-    .stream-header {
+    /* Stream Feed Controls */
+    .stream-control-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
-      gap: 0.8rem;
-      margin-bottom: 1.2rem;
+      gap: 0.85rem;
+      margin-bottom: 1.5rem;
       background: var(--bg-surface);
-      padding: 0.75rem 1rem;
+      padding: 0.8rem 1.15rem;
       border-radius: var(--radius-md);
       border: 1px solid var(--border-subtle);
       box-shadow: var(--shadow-soft);
     }
 
-    .stream-focus {
+    .stream-focus-info {
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      font-size: 0.82rem;
+      gap: 0.55rem;
+      font-size: var(--font-body);
       color: var(--text-muted);
     }
-
-    .btn-reset-country {
+    .btn-reset-roam {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--border-subtle);
       color: var(--text-muted);
-      padding: 0.2rem 0.55rem;
+      padding: 0.2rem 0.6rem;
       border-radius: var(--radius-full);
-      font-size: 0.72rem;
+      font-size: var(--font-caption);
       cursor: pointer;
-      transition: all 0.2s ease;
       font-family: inherit;
+      transition: all 0.2s ease;
     }
+    .btn-reset-roam:hover { background: var(--bg-surface-hover); color: var(--text-main); }
 
-    .btn-reset-country:hover {
-      background: var(--bg-surface-hover);
-      color: var(--text-main);
-    }
-
-    .stream-filters {
+    .stream-filter-tabs {
       display: flex;
       align-items: center;
       gap: 0.35rem;
       flex-wrap: wrap;
     }
-
-    .filter-btn {
+    .filter-pill-btn {
       background: transparent;
       border: 1px solid transparent;
       color: var(--text-dim);
-      padding: 0.25rem 0.65rem;
+      padding: 0.25rem 0.7rem;
       border-radius: var(--radius-full);
-      font-size: 0.78rem;
+      font-size: var(--font-caption);
       cursor: pointer;
       font-family: inherit;
       transition: all 0.2s ease;
     }
+    .filter-pill-btn:hover { color: var(--text-muted); background: var(--bg-surface-hover); }
+    .filter-pill-btn.active { background: rgba(255, 255, 255, 0.08); border-color: var(--border-subtle); color: var(--text-main); }
+    .filter-divider { width: 1px; height: 14px; background: rgba(255, 255, 255, 0.08); margin: 0 0.2rem; }
 
-    .filter-btn:hover {
-      color: var(--text-muted);
-      background: var(--bg-surface-hover);
-    }
-
-    .filter-btn.active {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: var(--border-subtle);
-      color: var(--text-main);
-    }
-
-    .filter-separator {
-      width: 1px;
-      height: 12px;
-      background: rgba(255, 255, 255, 0.08);
-      margin: 0 0.2rem;
-    }
-
-    /* 留言卡片（毛玻璃高级质感） */
-    .echo-list {
+    /* ================= 6. SKELETON LOADING ================= */
+    .skeleton-container {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 1.1rem;
     }
-
-    .echo-card {
+    .skeleton-card {
       background: var(--bg-card);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
-      padding: 1.35rem;
+      padding: 1.4rem;
+    }
+    .skeleton-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+    .skeleton-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
+      background-size: 400px 100%;
+      animation: shimmer 1.8s infinite linear;
+    }
+    .skeleton-line {
+      height: 12px;
+      border-radius: 6px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
+      background-size: 400px 100%;
+      animation: shimmer 1.8s infinite linear;
+      margin-bottom: 0.6rem;
+    }
+    .skeleton-line.short { width: 35%; }
+    .skeleton-line.medium { width: 65%; }
+    .skeleton-line.long { width: 95%; }
+
+    /* ================= 4 & 5. EMOTION-TINTED CARDS & ENTRY ANIMATION ================= */
+    .echo-feed-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+    }
+
+    .echo-card-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.35rem 1.4rem 1.35rem 1.55rem;
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       box-shadow: var(--shadow-soft);
-      transition: border-color 0.25s ease, background 0.25s ease;
+      transition: border-color 0.25s ease, background 0.3s ease, transform 0.2s ease, box-shadow 0.25s ease;
+      animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+      animation-delay: calc(var(--i, 0) * 0.08s);
     }
-
-    .echo-card:hover {
+    .echo-card-item:hover {
+      transform: translateY(-2px);
       border-color: var(--border-hover);
-      background: rgba(21, 30, 50, 0.6);
+      box-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.35);
     }
 
-    .echo-card-header {
+    .echo-meta-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -778,121 +611,94 @@
       gap: 0.5rem;
     }
 
-    .author-info {
-      display: flex;
-      align-items: center;
-      gap: 0.65rem;
-    }
+    .echo-author-wrap { display: flex; align-items: center; gap: 0.65rem; }
 
-    .author-avatar {
-      width: 32px;
-      height: 32px;
+    /* 8. Unique avatar gradient by nickname hash */
+    .echo-author-avatar {
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-subtle);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.82rem;
-      font-weight: 500;
-      color: var(--text-muted);
-    }
-
-    .author-meta {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .author-name {
       font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--text-main);
+      font-weight: 600;
+      color: #FFFFFF;
+      flex-shrink: 0;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
     }
 
-    .post-time {
-      font-size: 0.72rem;
-      color: var(--text-dim);
-    }
+    .echo-author-text { display: flex; flex-direction: column; }
+    .echo-author-name { font-size: var(--font-body); font-weight: 500; color: var(--text-main); }
+    .echo-post-time { font-size: var(--font-caption); color: var(--text-dim); font-weight: 300; }
 
-    .badge-group {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      flex-wrap: wrap;
-    }
+    .echo-badge-row { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
 
-    .country-tag {
+    .tag-country {
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid var(--border-subtle);
-      padding: 0.2rem 0.55rem;
+      padding: 0.18rem 0.55rem;
       border-radius: var(--radius-sm);
-      font-size: 0.72rem;
+      font-size: var(--font-caption);
       color: var(--text-muted);
     }
 
-    .solar-status-tag {
-      padding: 0.2rem 0.55rem;
+    .tag-solar {
+      padding: 0.18rem 0.55rem;
       border-radius: var(--radius-sm);
-      font-size: 0.72rem;
+      font-size: var(--font-caption);
       display: inline-flex;
       align-items: center;
       gap: 0.3rem;
       font-variant-numeric: tabular-nums;
     }
+    .tag-solar.day { background: rgba(253, 230, 138, 0.08); border: 1px solid rgba(253, 230, 138, 0.2); color: #FDE68A; }
+    .tag-solar.night { background: rgba(148, 163, 184, 0.08); border: 1px solid rgba(148, 163, 184, 0.16); color: #94A3B8; }
+    .tag-solar.twilight { background: rgba(251, 146, 60, 0.08); border: 1px solid rgba(251, 146, 60, 0.2); color: #FDBA74; }
 
-    .solar-status-tag.day {
-      background: rgba(253, 230, 138, 0.08);
-      border: 1px solid rgba(253, 230, 138, 0.2);
-      color: #FDE68A;
-    }
-
-    .solar-status-tag.night {
-      background: rgba(148, 163, 184, 0.08);
-      border: 1px solid rgba(148, 163, 184, 0.16);
-      color: #94A3B8;
-    }
-
-    .solar-status-tag.twilight {
-      background: rgba(251, 146, 60, 0.08);
-      border: 1px solid rgba(251, 146, 60, 0.2);
-      color: #FDBA74;
-    }
-
-    .emotion-tag {
-      padding: 0.2rem 0.55rem;
+    .tag-emotion {
+      padding: 0.18rem 0.55rem;
       border-radius: var(--radius-sm);
-      font-size: 0.72rem;
+      font-size: var(--font-caption);
       display: inline-flex;
       align-items: center;
       gap: 0.35rem;
       border: 1px solid transparent;
     }
 
-    .echo-card-content {
-      font-size: 0.9rem;
-      line-height: 1.7;
+    .echo-content-text {
+      font-size: var(--font-body);
+      line-height: 1.75;
       color: #E2E8F0;
-      margin-bottom: 0.9rem;
+      margin-bottom: 0.95rem;
       word-break: break-word;
       white-space: pre-wrap;
-      font-weight: 300;
+      font-weight: 400;
+      letter-spacing: 0.02em;
     }
 
-    /* 声音播放条 */
-    .voice-player-bar {
-      background: rgba(0, 0, 0, 0.25);
+    /* Voice Waveform Player Display (Larger & visual) */
+    .voice-bar-player {
+      background: rgba(0, 0, 0, 0.22);
       border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-sm);
-      padding: 0.6rem 0.9rem;
+      border-radius: var(--radius-md);
+      padding: 0.8rem 1.15rem;
       display: flex;
       align-items: center;
-      gap: 0.85rem;
-      margin-bottom: 0.9rem;
+      gap: 1rem;
+      margin-bottom: 0.95rem;
+      cursor: pointer;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+    .voice-bar-player:hover {
+      border-color: rgba(125, 211, 252, 0.3);
+      background: rgba(0, 0, 0, 0.32);
     }
 
-    .btn-play-voice {
-      width: 32px;
-      height: 32px;
+    .btn-voice-play {
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid rgba(255, 255, 255, 0.12);
@@ -902,70 +708,55 @@
       justify-content: center;
       cursor: pointer;
       transition: all 0.2s ease;
+      flex-shrink: 0;
     }
+    .btn-voice-play:hover { background: rgba(255, 255, 255, 0.16); color: var(--text-main); }
 
-    .btn-play-voice:hover {
-      background: rgba(255, 255, 255, 0.16);
-      color: var(--text-main);
-    }
-
-    .voice-wave-container {
+    .waveform-visual-container {
       flex: 1;
-      height: 20px;
+      height: 34px;
       display: flex;
       align-items: center;
-      gap: 3px;
+      gap: 2.5px;
     }
-
-    .wave-bar {
+    .waveform-visual-bar {
       flex: 1;
       height: 25%;
-      background: rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.16);
       border-radius: 2px;
-      transition: height 0.25s ease;
+      transition: height 0.25s ease, background 0.25s ease;
     }
-
-    .voice-player-bar.playing .wave-bar {
-      animation: wave-gentle 1.2s infinite alternate ease-in-out;
+    .voice-bar-player.playing .waveform-visual-bar {
+      animation: waveGentle 1.2s infinite alternate ease-in-out;
       background: var(--accent-voice);
-      opacity: 0.8;
+      opacity: 0.85;
     }
+    .voice-bar-player.playing .waveform-visual-bar:nth-child(2n) { animation-delay: 0.18s; }
+    .voice-bar-player.playing .waveform-visual-bar:nth-child(3n) { animation-delay: 0.36s; }
+    .voice-bar-player.playing .waveform-visual-bar:nth-child(4n) { animation-delay: 0.1s; }
 
-    .voice-player-bar.playing .wave-bar:nth-child(2n) { animation-delay: 0.2s; }
-    .voice-player-bar.playing .wave-bar:nth-child(3n) { animation-delay: 0.4s; }
-    .voice-player-bar.playing .wave-bar:nth-child(4n) { animation-delay: 0.1s; }
-
-    @keyframes wave-gentle {
-      0% { height: 20%; }
-      100% { height: 85%; }
-    }
-
-    .voice-duration {
-      font-size: 0.75rem;
+    .voice-sec-label {
+      font-size: var(--font-caption);
       color: var(--text-dim);
       font-variant-numeric: tabular-nums;
+      flex-shrink: 0;
     }
 
-    .echo-card-footer {
+    /* Echo Card Footer */
+    .echo-card-footer-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
       border-top: 1px solid rgba(255, 255, 255, 0.05);
       padding-top: 0.75rem;
-      margin-top: 0.5rem;
+      margin-top: 0.4rem;
     }
-
-    .action-group {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .btn-action {
+    .echo-actions-left { display: flex; align-items: center; gap: 0.9rem; }
+    .action-btn-link {
       background: transparent;
       border: none;
       color: var(--text-dim);
-      font-size: 0.78rem;
+      font-size: var(--font-caption);
       display: flex;
       align-items: center;
       gap: 0.35rem;
@@ -973,41 +764,398 @@
       font-family: inherit;
       transition: color 0.2s ease;
     }
+    .action-btn-link:hover { color: var(--text-muted); }
+    .action-btn-link.liked { color: #F87171; }
+    .action-btn-link.btn-danger-hover:hover { color: var(--accent-danger); }
 
-    .btn-action:hover {
-      color: var(--text-muted);
+    /* ================= 3. FLOATING ACTION BUTTON (FAB) ================= */
+    .fab-button {
+      position: fixed;
+      bottom: 2.25rem;
+      right: 2.25rem;
+      z-index: 95;
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(125, 211, 252, 0.35);
+      color: var(--accent-voice);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 0 20px rgba(125, 211, 252, 0.18);
+      animation: fabPulse 3s ease-in-out infinite;
+      transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease;
+    }
+    .fab-button:hover {
+      transform: scale(1.08);
+      background: rgba(30, 41, 59, 0.95);
+      border-color: var(--accent-voice);
     }
 
-    .btn-action.liked {
-      color: #F87171;
-    }
-
-    .btn-action.btn-del:hover {
-      color: var(--accent-danger);
-    }
-
-    /* 模态弹窗 */
-    .modal-backdrop {
+    /* ================= 3. MULTI-STEP COMPOSER (BOTTOM SHEET / WIZARD) ================= */
+    .sheet-overlay {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(11, 15, 25, 0.75);
+      background: rgba(11, 15, 25, 0.72);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 150;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .sheet-overlay.active { display: flex; }
+
+    .sheet-modal {
+      background: #111726;
+      border: 1px solid var(--border-subtle);
+      border-bottom: none;
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      width: 100%;
+      max-width: 580px;
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      animation: slideUpSheet 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 -16px 48px rgba(0, 0, 0, 0.6);
+      overflow: hidden;
+    }
+
+    .sheet-drag-handle {
+      display: flex;
+      justify-content: center;
+      padding: 0.75rem 0 0.3rem;
+      cursor: grab;
+    }
+    .sheet-drag-bar { width: 40px; height: 4px; border-radius: 2px; background: rgba(255, 255, 255, 0.16); }
+
+    .sheet-top-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 1.75rem 1rem;
+    }
+
+    /* Stepper UI */
+    .wizard-stepper {
+      display: flex;
+      align-items: center;
+      padding: 0 1.75rem 1.25rem;
+    }
+    .wizard-step-node {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: var(--font-caption);
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: color 0.2s ease;
+      user-select: none;
+    }
+    .wizard-step-node.active { color: var(--accent-voice); font-weight: 500; }
+    .wizard-step-node.completed { color: var(--text-muted); }
+
+    .step-circle {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    .wizard-step-node.active .step-circle {
+      border-color: var(--accent-voice);
+      background: rgba(125, 211, 252, 0.12);
+      color: var(--accent-voice);
+    }
+    .wizard-step-node.completed .step-circle {
+      border-color: var(--text-muted);
+      background: rgba(148, 163, 184, 0.12);
+      color: var(--text-muted);
+    }
+    .stepper-connecting-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border-subtle);
+      margin: 0 0.65rem;
+    }
+
+    /* Step Panels */
+    .sheet-body-content {
+      padding: 0 1.75rem 1.75rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .step-card-slide {
+      display: none;
+      animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .step-card-slide.active { display: block; }
+
+    /* Step 1: Choice Cards */
+    .type-choice-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 0.5rem 0 1rem;
+    }
+    .type-choice-card {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.5rem 1.2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .type-choice-card:hover {
+      border-color: var(--border-hover);
+      background: rgba(255, 255, 255, 0.04);
+      transform: translateY(-2px);
+    }
+    .type-choice-card.selected {
+      border-color: var(--accent-voice);
+      background: rgba(125, 211, 252, 0.08);
+      box-shadow: 0 0 24px rgba(125, 211, 252, 0.12);
+    }
+    .type-choice-card .choice-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-voice);
+    }
+
+    /* Step 2: Content (Recorder & Textarea) */
+    .audio-recorder-container {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px dashed var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.4rem 1.2rem;
+      text-align: center;
+    }
+    .rec-time-display {
+      font-size: 1.75rem;
+      font-weight: 400;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-main);
+      letter-spacing: 0.08em;
+      margin: 0.4rem 0 0.6rem;
+    }
+    .rec-btn-action {
+      background: rgba(185, 28, 28, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      color: #FCA5A5;
+      padding: 0.5rem 1.3rem;
+      border-radius: var(--radius-full);
+      font-size: var(--font-body);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: inherit;
+      transition: all 0.25s ease;
+    }
+    .rec-btn-action:hover { background: rgba(185, 28, 28, 0.25); border-color: rgba(239, 68, 68, 0.45); }
+    .rec-btn-action.recording { animation: recordBreathe 2s infinite ease-in-out; background: rgba(185, 28, 28, 0.35); }
+
+    /* 9. Real-time amplitude visualization using AnalyserNode */
+    .realtime-visual-waveform {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2.5px;
+      height: 42px;
+      margin: 0.8rem 0;
+    }
+    .realtime-bar {
+      width: 3.5px;
+      background: var(--accent-voice);
+      border-radius: 2px;
+      transition: height 0.06s ease;
+      opacity: 0.85;
+      min-height: 4px;
+    }
+
+    .audio-preview-player {
+      width: 100%;
+      margin-top: 0.85rem;
+      display: none;
+      filter: invert(0.85) hue-rotate(180deg);
+      opacity: 0.85;
+    }
+
+    .input-field-standard {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 0.85rem;
+      color: var(--text-main);
+      font-size: var(--font-body);
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+    .input-field-standard:focus { border-color: rgba(255, 255, 255, 0.28); background: rgba(0, 0, 0, 0.4); }
+    textarea.input-field-standard { resize: vertical; min-height: 110px; }
+    .char-count-indicator { text-align: right; font-size: 0.7rem; color: var(--text-dim); margin-top: 0.3rem; font-variant-numeric: tabular-nums; }
+
+    /* Step 3: Mood & Options */
+    .emotion-matrix-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin: 0.5rem 0 1.25rem;
+    }
+    .emotion-pick-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 0.55rem 0.35rem;
+      text-align: center;
+      font-size: var(--font-caption);
+      cursor: pointer;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+    .emotion-pick-item:hover { background: var(--bg-surface-hover); color: var(--text-muted); }
+    .emotion-pick-item.selected {
+      background: rgba(255, 255, 255, 0.09);
+      border-color: rgba(255, 255, 255, 0.28);
+      color: var(--text-main);
+    }
+
+    .form-checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: var(--font-caption);
+      color: var(--text-muted);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    /* Step 4: Review Summary Card */
+    .review-summary-card {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+    .review-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: var(--font-caption);
+      padding: 0.45rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    .review-row:last-child { border-bottom: none; }
+    .review-row-label { color: var(--text-dim); }
+    .review-row-val { color: var(--text-main); font-weight: 500; display: inline-flex; align-items: center; gap: 0.35rem; }
+
+    /* Stepper Navigation Buttons */
+    .sheet-nav-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.85rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border-subtle);
+      margin-top: 1rem;
+    }
+    .btn-wizard {
+      flex: 1;
+      padding: 0.7rem;
+      border-radius: var(--radius-sm);
+      font-size: var(--font-body);
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      transition: all 0.2s ease;
+      border: 1px solid var(--border-subtle);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+    }
+    .btn-wizard:hover:not(:disabled) { background: rgba(255, 255, 255, 0.1); color: var(--text-main); }
+    .btn-wizard.primary {
+      background: rgba(125, 211, 252, 0.12);
+      border-color: rgba(125, 211, 252, 0.3);
+      color: var(--accent-voice);
+    }
+    .btn-wizard.primary:hover:not(:disabled) { background: rgba(125, 211, 252, 0.2); }
+    .btn-wizard:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    /* Standard Submit Button */
+    .btn-transmit {
+      width: 100%;
+      background: rgba(125, 211, 252, 0.14);
+      border: 1px solid rgba(125, 211, 252, 0.32);
+      color: var(--accent-voice);
+      padding: 0.8rem;
+      border-radius: var(--radius-sm);
+      font-weight: 500;
+      font-size: var(--font-body);
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.25s ease;
+    }
+    .btn-transmit:hover:not(:disabled) {
+      background: rgba(125, 211, 252, 0.24);
+      border-color: rgba(125, 211, 252, 0.45);
+      color: #FFFFFF;
+    }
+    .btn-transmit:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ================= MODALS ================= */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(11, 15, 25, 0.78);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       z-index: 200;
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 1rem;
+      padding: 1.25rem;
     }
+    .modal-overlay.active { display: flex; }
 
-    .modal-backdrop.active {
-      display: flex;
-    }
-
-    .modal-card {
+    .modal-window {
       background: #111726;
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
@@ -1018,134 +1166,157 @@
       flex-direction: column;
       box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
       overflow: hidden;
+      animation: fadeInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
-
-    .modal-header {
-      padding: 1.1rem 1.35rem;
+    .modal-top {
+      padding: 1.1rem 1.4rem;
       border-bottom: 1px solid var(--border-subtle);
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
-
-    .modal-body {
-      padding: 1.35rem;
+    .modal-content-scroll {
+      padding: 1.4rem;
       overflow-y: auto;
       flex: 1;
     }
 
-    .comment-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      margin-top: 1rem;
-    }
-
-    .comment-item {
+    .comment-feed { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem; }
+    .comment-bubble {
       background: rgba(255, 255, 255, 0.02);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-sm);
-      padding: 0.7rem;
-      font-size: 0.82rem;
+      padding: 0.75rem;
+      font-size: var(--font-body);
     }
-
-    .comment-item-header {
+    .comment-meta-row {
       display: flex;
       justify-content: space-between;
       color: var(--text-dim);
-      font-size: 0.72rem;
+      font-size: var(--font-caption);
       margin-bottom: 0.35rem;
     }
 
-    /* 轻量 Toast 提示 */
-    .toast {
+    /* Toast */
+    .toast-popup {
       position: fixed;
-      bottom: 2rem;
+      bottom: 2.25rem;
       left: 50%;
       transform: translateX(-50%) translateY(100px);
-      background: rgba(15, 23, 42, 0.92);
+      background: rgba(15, 23, 42, 0.94);
       border: 1px solid var(--border-subtle);
       backdrop-filter: blur(16px);
       color: var(--text-main);
-      padding: 0.55rem 1.25rem;
+      padding: 0.55rem 1.35rem;
       border-radius: var(--radius-full);
-      font-size: 0.82rem;
+      font-size: var(--font-caption);
       z-index: 999;
-      box-shadow: var(--shadow-soft);
       opacity: 0;
       transition: all 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.28);
       pointer-events: none;
+      box-shadow: var(--shadow-soft);
     }
+    .toast-popup.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-    .toast.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-    }
-
-    .empty-state {
+    .stream-empty-prompt {
       text-align: center;
       padding: 3.5rem 1rem;
       color: var(--text-dim);
-      font-size: 0.85rem;
+      font-size: var(--font-body);
+      font-weight: 300;
+    }
+
+    /* ================= 11. MINIMAL FOOTER ================= */
+    .site-bottom-footer {
+      border-top: 1px solid var(--border-subtle);
+      padding: 2.5rem 2rem;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: var(--font-caption);
+      letter-spacing: 0.08em;
+      font-weight: 300;
+    }
+    .site-bottom-footer a { color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+    .site-bottom-footer a:hover { color: var(--accent-voice); }
+
+    /* ================= 10. RESPONSIVE BREAKPOINTS ================= */
+    /* Desktop (>1280px): Default styles above */
+
+    /* Tablet: 768px - 1280px */
+    @media (max-width: 1280px) {
+      .main-grid {
+        grid-template-columns: 310px 1fr;
+        gap: 2rem;
+        padding: 2.5rem 1.5rem;
+      }
+      .hero-brand-title { font-size: 2.3rem; }
+    }
+
+    @media (max-width: 1024px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+        padding: 2rem 1.25rem;
+        gap: 2rem;
+      }
+      .observatory-sidebar { order: 2; }
+    }
+
+    /* Mobile: <768px */
+    @media (max-width: 768px) {
+      .hero-section {
+        height: 60vh;
+        min-height: 420px;
+      }
+      .hero-brand-title { font-size: 1.75rem; letter-spacing: 0.12em; }
+      .hero-brand-sub { font-size: 0.88rem; }
+      .hero-floating-card { padding: 1.2rem 1.5rem; width: 88%; }
+      .hero-pill-bar { left: 0.75rem; right: 0.75rem; top: 0.75rem; }
+      .globe-legend-wrap { left: 0.75rem; bottom: 0.75rem; padding: 0.25rem 0.65rem; }
+      .globe-toolbar-wrap { right: 0.75rem; bottom: 0.75rem; }
+      .scroll-indicator-wrap { bottom: 1.25rem; }
+      .site-header { padding: 0.65rem 1rem; }
+      .main-grid { padding: 1.5rem 0.85rem; }
+      .fab-button { bottom: 1.25rem; right: 1.25rem; width: 50px; height: 50px; }
+
+      /* Composer full-screen on mobile */
+      .sheet-modal {
+        max-width: 100%;
+        max-height: 96vh;
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      }
+      .type-choice-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-  <!-- 顶部导航 -->
-  <header>
-    <a href="/" class="brand">
-      <div class="brand-mark">
-        <svg class="icon icon-lg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
-      </div>
-      <div class="brand-text">
-        <h1 data-i18n="site_title">WORLD ECHO</h1>
-        <p data-i18n="site_subtitle">世界回声 · 静谧之境</p>
-      </div>
-    </a>
-    <div class="header-actions">
-      <!-- 多语言选择器 -->
-      <select id="lang-select" class="lang-select" title="Language">
-        <option value="zh">简体中文</option>
-        <option value="en">English</option>
-        <option value="ja">日本語</option>
-        <option value="ko">한국어</option>
-        <option value="es">Español</option>
-        <option value="fr">Français</option>
-        <option value="de">Deutsch</option>
-        <option value="ru">Русский</option>
-        <option value="ar">العربية</option>
-      </select>
-
-      <!-- 匿名身份按钮 -->
-      <div class="user-pill" id="identity-btn">
-        <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        <span id="current-nickname-display">探索者</span>
-        <span id="my-country-badge" style="opacity: 0.65; font-size: 0.72rem;">...</span>
-      </div>
-    </div>
-  </header>
-
-  <!-- 3D 地球视窗 -->
-  <div class="globe-section">
+  <!-- ================= 1. IMMERSIVE HERO LANDING (100vh) ================= -->
+  <section class="hero-section" id="hero-section">
     <div id="globe-container"></div>
-    
-    <!-- 实时太阳光照与昼夜天象浮动条 -->
-    <div class="solar-weather-strip">
-      <div class="solar-badge-capsule">
-        <svg class="icon icon-sm" style="color: var(--accent-sun);" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-        <span data-i18n="sun_subsolar">太阳直射</span>
-        <span class="subsolar-coord" id="solar-subsolar-display">--</span>
-      </div>
 
-      <div class="day-night-toggle-group">
-        <button class="dn-pill active" data-dn="all" id="dn-filter-all" data-i18n="filter_all_time">全球时空</button>
-        <button class="dn-pill" data-dn="day" id="dn-filter-day">
+    <!-- Centered Brand Overlay Floating over the Globe -->
+    <div class="hero-floating-card">
+      <h1 class="hero-brand-title" data-i18n="site_title">WORLD ECHO</h1>
+      <p class="hero-brand-sub" data-i18n="site_subtitle">世界回声 · 静谧之境</p>
+    </div>
+
+    <!-- Floating day/night shader pills -->
+    <div class="hero-pill-bar">
+      <div class="hero-pill-left">
+        <div class="pill-capsule">
+          <svg class="icon icon-sm" style="color: var(--accent-sun);" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+          <span data-i18n="sun_subsolar">太阳直射</span>
+          <span class="subsolar-coord" id="solar-subsolar-display">--</span>
+        </div>
+      </div>
+      <div class="hero-pill-right">
+        <button class="pill-capsule interactive active" data-dn="all" id="dn-filter-all" data-i18n="filter_all_time">全球时空</button>
+        <button class="pill-capsule interactive" data-dn="day" id="dn-filter-day">
           <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
           <span data-i18n="filter_day_only">昼间之境</span>
           <span class="dn-count" id="day-country-count">0</span>
         </button>
-        <button class="dn-pill" data-dn="night" id="dn-filter-night">
+        <button class="pill-capsule interactive" data-dn="night" id="dn-filter-night">
           <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
           <span data-i18n="filter_night_only">夜幕低垂</span>
           <span class="dn-count" id="night-country-count">0</span>
@@ -1153,8 +1324,8 @@
       </div>
     </div>
 
-    <!-- 地球左下角图例胶囊 -->
-    <div class="globe-legend-capsule">
+    <!-- Globe Legend Bottom-Left -->
+    <div class="globe-legend-wrap">
       <span class="legend-item"><span class="legend-dot voice"></span><span data-i18n="legend_voice">声音回声</span></span>
       <span class="legend-divider"></span>
       <span class="legend-item"><span class="legend-dot text"></span><span data-i18n="legend_text">文字信笺</span></span>
@@ -1162,9 +1333,9 @@
       <span class="legend-item"><span class="legend-dot sun"></span><span data-i18n="legend_sun">晨昏光影</span></span>
     </div>
 
-    <!-- 地球右侧整合式悬浮工具栏 -->
-    <div class="globe-toolbar">
-      <button class="tool-btn" id="btn-toggle-spin" title="自转切换">
+    <!-- Globe Controls Bottom-Right -->
+    <div class="globe-toolbar-wrap">
+      <button class="tool-btn" id="btn-toggle-spin" title="切换地球自转">
         <svg class="icon" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
       </button>
       <div class="tool-divider"></div>
@@ -1176,894 +1347,802 @@
         <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
       </button>
     </div>
-  </div>
 
-  <!-- 主体工作区 -->
-  <main class="main-container">
-    
-    <!-- 左侧：情绪天气 + 发射回声 -->
-    <aside style="display: flex; flex-direction: column; gap: 1.5rem;">
-      
-      <!-- 世界情绪天气 -->
-      <section class="glass-panel">
-        <div class="panel-header">
-          <span data-i18n="world_mood_title">世界情绪天气</span>
-          <span class="panel-sub" id="mood-summary">...</span>
+    <!-- Gentle Scroll Down Indicator -->
+    <div class="scroll-indicator-wrap" id="scroll-indicator" onclick="document.getElementById('content-anchor').scrollIntoView({behavior:'smooth'})">
+      <span class="scroll-indicator-text" data-i18n="scroll_explore">探索回声</span>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M7 13l5 5 5-5"/>
+        <path d="M7 7l5 5 5-5"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- Scroll Anchor -->
+  <div id="content-anchor" class="content-anchor"></div>
+
+  <!-- ================= STICKY HEADER (Appears on scroll) ================= -->
+  <header class="site-header" id="site-header">
+    <a href="#hero-section" class="brand-link" onclick="window.scrollTo({top:0, behavior:'smooth'}); return false;">
+      <div class="brand-icon-box">
+        <svg class="icon icon-lg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+      </div>
+      <div class="brand-meta">
+        <h1 data-i18n="site_title">WORLD ECHO</h1>
+        <p data-i18n="site_subtitle">世界回声 · 静谧之境</p>
+      </div>
+    </a>
+    <div class="header-right">
+      <select id="lang-select" class="lang-dropdown" title="Language">
+        <option value="zh">简体中文</option>
+        <option value="en">English</option>
+        <option value="ja">日本語</option>
+        <option value="ko">한국어</option>
+        <option value="es">Español</option>
+        <option value="fr">Français</option>
+        <option value="de">Deutsch</option>
+        <option value="ru">Русский</option>
+        <option value="ar">العربية</option>
+      </select>
+      <div class="identity-pill-btn" id="identity-btn">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span id="current-nickname-display">探索者</span>
+        <span id="my-country-badge" style="opacity: 0.65; font-size: 0.7rem;">...</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= 2. MAIN CONTENT (Generous Whitespace & Breathing Room) ================= -->
+  <main class="main-grid">
+
+    <!-- Left Sidebar: Mood Weather + Observatory Info -->
+    <aside class="observatory-sidebar">
+      <!-- World Mood Weather -->
+      <section class="glass-card">
+        <div class="panel-headline">
+          <span class="subtitle-md" data-i18n="world_mood_title">世界情绪天气</span>
+          <span class="caption-sm" id="mood-summary">...</span>
         </div>
-        <div class="mood-grid" id="mood-container">
-          <!-- 情绪胶囊由 JS 动态生成 -->
+        <div class="mood-capsule-grid" id="mood-container">
+          <!-- Populated by JS -->
         </div>
       </section>
 
-      <!-- 回声发射台 -->
-      <section class="glass-panel">
-        <div class="panel-header">
-          <span data-i18n="composer_title">发射回声</span>
-          <span class="panel-sub" id="composer-mode-badge" data-i18n="mode_voice">声音模式</span>
-        </div>
-
-        <div class="composer-switch">
-          <div class="composer-tab active" data-type="voice" id="tab-voice">
-            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
-            <span data-i18n="tab_voice">录制声音</span>
-          </div>
-          <div class="composer-tab" data-type="text" id="tab-text">
-            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
-            <span data-i18n="tab_text">抒写文字</span>
-          </div>
-        </div>
-
-        <!-- 语音录制区 -->
-        <div id="voice-composer-area">
-          <div class="recorder-box">
-            <div style="font-size: 0.75rem; color: var(--text-dim);" data-i18n="rec_limit">最长 60 秒原生立体声录制</div>
-            <div class="record-timer" id="record-timer">00:00</div>
-            <div class="record-actions">
-              <button class="btn-record" id="btn-record-toggle">
-                <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="currentColor"/></svg>
-                <span id="record-btn-text" data-i18n="btn_start_rec">开始录音</span>
-              </button>
-              <button class="tool-btn" id="btn-rerecord" style="display: none;" title="重录">
-                <svg class="icon" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
-              </button>
-            </div>
-            <audio id="local-audio-preview" class="audio-preview" controls></audio>
-          </div>
-          
-          <div class="form-group">
-            <input type="text" id="voice-caption-input" maxlength="200" placeholder="为这束回声附上一句话（可选）..." data-i18n-ph="voice_caption_placeholder">
-          </div>
-        </div>
-
-        <!-- 文字录入区 -->
-        <div id="text-composer-area" style="display: none;">
-          <div class="form-group">
-            <textarea id="text-content-input" maxlength="1000" placeholder="这一刻，你在世界哪处，经历着怎样的心境？" data-i18n-ph="text_placeholder"></textarea>
-            <div class="char-count"><span id="text-char-count">0</span> / 1000</div>
-          </div>
-        </div>
-
-        <!-- 情绪选择器 -->
-        <div class="form-group">
-          <label data-i18n="mood_label">此刻心境：</label>
-          <div class="emotion-select-row" id="emotion-selector">
-            <!-- 情绪标签由 JS 生成，使用静谧调色 -->
-          </div>
-        </div>
-
-        <!-- 匿名选项 -->
-        <label class="checkbox-row">
-          <input type="checkbox" id="hide-country-checkbox" style="accent-color: var(--accent-voice);">
-          <span data-i18n="hide_country">隐藏国家归属（标记为深空孤岛）</span>
-        </label>
-
-        <!-- 发送按钮 -->
-        <button class="btn-submit" id="btn-submit-echo">
-          <svg class="icon" viewBox="0 0 24 24"><line x1="22" x2="11" y1="2" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-          <span data-i18n="btn_submit_echo">发送回声</span>
-        </button>
-      </section>
-
+      <!-- Midnight Observatory Contemplation Card -->
+      <div class="observatory-info-card">
+        <p><strong>深夜天文台 · 经纬回声</strong></p>
+        <p style="margin-top: 0.5rem;" data-i18n="sidebar_desc">每一次发声，都与当下的晨昏线交融。匿名、真实、远离算法喧嚣，倾听世界另一端的轻声叹息。</p>
+      </div>
     </aside>
 
-    <!-- 右侧：全球回声流 -->
+    <!-- Right Column: Echo Stream Feed -->
     <section>
-      <!-- 过滤栏 -->
-      <div class="stream-header">
-        <div class="stream-focus">
+      <!-- Stream header / filters -->
+      <div class="stream-control-bar">
+        <div class="stream-focus-info">
           <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
-          <span id="active-filter-label" data-i18n="stream_global">全球漫游</span>
-          <button class="btn-reset-country" id="btn-clear-country" style="display: none;" data-i18n="btn_back_global">返回全球</button>
+          <span id="active-filter-label" class="body-regular" data-i18n="stream_global">全球漫游</span>
+          <button class="btn-reset-roam" id="btn-clear-country" style="display: none;" data-i18n="btn_back_global">返回全球</button>
         </div>
 
-        <div class="stream-filters">
-          <button class="filter-btn active" data-type="all" data-i18n="filter_all">全部</button>
-          <button class="filter-btn" data-type="voice" data-i18n="filter_voice">声音</button>
-          <button class="filter-btn" data-type="text" data-i18n="filter_text">文字</button>
-          <div class="filter-separator"></div>
-          <button class="filter-btn active" data-sort="latest" data-i18n="sort_latest">最新</button>
-          <button class="filter-btn" data-sort="popular" data-i18n="sort_popular">热门</button>
-          <button class="filter-btn" data-sort="random" data-i18n="sort_random">漫游</button>
+        <div class="stream-filter-tabs">
+          <button class="filter-pill-btn active" data-type="all" data-i18n="filter_all">全部</button>
+          <button class="filter-pill-btn" data-type="voice" data-i18n="filter_voice">声音</button>
+          <button class="filter-pill-btn" data-type="text" data-i18n="filter_text">文字</button>
+          <div class="filter-divider"></div>
+          <button class="filter-pill-btn active" data-sort="latest" data-i18n="sort_latest">最新</button>
+          <button class="filter-pill-btn" data-sort="popular" data-i18n="sort_popular">热门</button>
+          <button class="filter-pill-btn" data-sort="random" data-i18n="sort_random">漫游</button>
           <button class="tool-btn" id="btn-refresh-stream" style="width: 28px; height: 28px;" title="刷新">
             <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
           </button>
         </div>
       </div>
 
-      <!-- 留言卡片列表 -->
-      <div class="echo-list" id="echo-stream-container">
-        <div class="empty-state" data-i18n="loading_stream">正在调频宇宙接收器...</div>
+      <!-- Feed Container (Initial 4 Shimmer Skeletons) -->
+      <div class="echo-feed-list" id="echo-stream-container">
+        <div class="skeleton-card">
+          <div class="skeleton-header">
+            <div class="skeleton-avatar"></div>
+            <div style="flex:1;"><div class="skeleton-line short"></div><div class="skeleton-line" style="width:20%;"></div></div>
+          </div>
+          <div class="skeleton-line long"></div>
+          <div class="skeleton-line medium"></div>
+        </div>
+        <div class="skeleton-card">
+          <div class="skeleton-header">
+            <div class="skeleton-avatar"></div>
+            <div style="flex:1;"><div class="skeleton-line short"></div><div class="skeleton-line" style="width:25%;"></div></div>
+          </div>
+          <div class="skeleton-line long"></div>
+          <div class="skeleton-line short"></div>
+        </div>
+        <div class="skeleton-card">
+          <div class="skeleton-header">
+            <div class="skeleton-avatar"></div>
+            <div style="flex:1;"><div class="skeleton-line short"></div><div class="skeleton-line" style="width:20%;"></div></div>
+          </div>
+          <div class="skeleton-line medium"></div>
+          <div class="skeleton-line long"></div>
+        </div>
+        <div class="skeleton-card">
+          <div class="skeleton-header">
+            <div class="skeleton-avatar"></div>
+            <div style="flex:1;"><div class="skeleton-line short"></div><div class="skeleton-line" style="width:22%;"></div></div>
+          </div>
+          <div class="skeleton-line long"></div>
+          <div class="skeleton-line medium"></div>
+        </div>
       </div>
     </section>
-
   </main>
 
-  <!-- 模态框：匿名身份管理 / 恢复码 -->
-  <div class="modal-backdrop" id="identity-modal">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3 style="font-size: 0.95rem; font-weight: 500;" data-i18n="modal_identity_title">匿名身份与凭据</h3>
-        <button class="tool-btn" id="btn-close-identity">
+  <!-- ================= 3. FLOATING ACTION BUTTON (FAB) ================= -->
+  <button class="fab-button" id="fab-compose" title="发射回声">
+    <svg class="icon-xl" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  </button>
+
+  <!-- ================= 3. MULTI-STEP COMPOSER (BOTTOM SHEET WIZARD) ================= -->
+  <div class="sheet-overlay" id="composer-overlay">
+    <div class="sheet-modal" id="composer-sheet">
+      <div class="sheet-drag-handle"><div class="sheet-drag-bar"></div></div>
+      <div class="sheet-top-header">
+        <h2 class="title-lg" data-i18n="composer_title">发射回声</h2>
+        <button class="tool-btn" id="btn-close-composer">
           <svg class="icon" viewBox="0 0 24 24"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
         </button>
       </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label data-i18n="nickname_label">你的匿名代号：</label>
-          <div style="display: flex; gap: 0.5rem;">
-            <input type="text" id="input-nickname" maxlength="30" placeholder="例如：星海漫游者 #42">
-            <button class="btn-submit" id="btn-save-nickname" style="width: auto; padding: 0.4rem 1rem; font-size: 0.82rem;" data-i18n="btn_save">保存</button>
+
+      <!-- Stepper Progress Header -->
+      <div class="wizard-stepper">
+        <div class="wizard-step-node active" data-step="1">
+          <span class="step-circle">1</span>
+          <span data-i18n="step_type">类型</span>
+        </div>
+        <div class="stepper-connecting-line"></div>
+        <div class="wizard-step-node" data-step="2">
+          <span class="step-circle">2</span>
+          <span data-i18n="step_content">内容</span>
+        </div>
+        <div class="stepper-connecting-line"></div>
+        <div class="wizard-step-node" data-step="3">
+          <span class="step-circle">3</span>
+          <span data-i18n="step_mood">心境</span>
+        </div>
+        <div class="stepper-connecting-line"></div>
+        <div class="wizard-step-node" data-step="4">
+          <span class="step-circle">4</span>
+          <span data-i18n="step_send">发送</span>
+        </div>
+      </div>
+
+      <!-- Wizard Body Content -->
+      <div class="sheet-body-content">
+        <!-- Step 1: Choose Type -->
+        <div class="step-card-slide active" id="step-panel-1">
+          <div class="caption-sm" style="margin-bottom:0.75rem;" data-i18n="step_1_hint">请选择这束回声的表达形式：</div>
+          <div class="type-choice-grid">
+            <div class="type-choice-card selected" id="choice-voice" data-type="voice">
+              <div class="choice-icon">
+                <svg class="icon-lg" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+              </div>
+              <strong style="color:var(--text-main); font-size:0.95rem;" data-i18n="tab_voice">录制声音</strong>
+              <span class="caption-sm" data-i18n="rec_limit">最长 60 秒原生立体声录制</span>
+            </div>
+            <div class="type-choice-card" id="choice-text" data-type="text">
+              <div class="choice-icon">
+                <svg class="icon-lg" viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+              </div>
+              <strong style="color:var(--text-main); font-size:0.95rem;" data-i18n="tab_text">抒写文字</strong>
+              <span class="caption-sm" data-i18n="text_limit_hint">最多 1000 字符信笺</span>
+            </div>
           </div>
         </div>
 
-        <div class="form-group" style="margin-top: 1.5rem;">
-          <label data-i18n="recovery_code_label">身份恢复码（换设备/清缓存后恢复身份）：</label>
-          <textarea id="identity-export-text" readonly style="font-family: monospace; font-size: 0.72rem; height: 70px; background: rgba(0,0,0,0.4);"></textarea>
-          <button class="btn-submit" id="btn-copy-identity" style="margin-top: 0.4rem; background: rgba(255,255,255,0.05); color: var(--text-muted);" data-i18n="btn_copy_code">
+        <!-- Step 2: Content Input / Recording -->
+        <div class="step-card-slide" id="step-panel-2">
+          <!-- Voice Recorder Interface -->
+          <div id="voice-composer-area">
+            <div class="audio-recorder-container">
+              <div class="caption-sm" data-i18n="rec_limit">最长 60 秒原生立体声录制</div>
+              <div class="rec-time-display" id="record-timer">00:00</div>
+              
+              <!-- 9. Real-time amplitude bar graph -->
+              <div class="realtime-visual-waveform" id="rec-waveform" style="display: none;"></div>
+
+              <div style="display:flex; justify-content:center; align-items:center; gap:0.75rem;">
+                <button class="rec-btn-action" id="btn-record-toggle">
+                  <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="currentColor"/></svg>
+                  <span id="record-btn-text" data-i18n="btn_start_rec">开始录音</span>
+                </button>
+                <button class="tool-btn" id="btn-rerecord" style="display: none;" title="重新录音">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+                </button>
+              </div>
+              <audio id="local-audio-preview" class="audio-preview-player" controls></audio>
+            </div>
+            <div style="margin-top: 1rem;">
+              <input type="text" id="voice-caption-input" class="input-field-standard" maxlength="200" placeholder="为这束回声附上一句话（可选）..." data-i18n-ph="voice_caption_placeholder">
+            </div>
+          </div>
+
+          <!-- Text Input Interface -->
+          <div id="text-composer-area" style="display: none;">
+            <textarea id="text-content-input" class="input-field-standard" maxlength="1000" placeholder="这一刻，你在世界哪处，经历着怎样的心境？" data-i18n-ph="text_placeholder"></textarea>
+            <div class="char-count-indicator"><span id="text-char-count">0</span> / 1000</div>
+          </div>
+        </div>
+
+        <!-- Step 3: Mood & Space Island Options -->
+        <div class="step-card-slide" id="step-panel-3">
+          <label class="caption-sm" data-i18n="mood_label" style="display:block; margin-bottom:0.4rem;">此刻心境：</label>
+          <div class="emotion-matrix-grid" id="emotion-selector">
+            <!-- Populated by JS -->
+          </div>
+          <label class="form-checkbox-label" style="margin-top: 1rem;">
+            <input type="checkbox" id="hide-country-checkbox" style="accent-color: var(--accent-voice); width:15px; height:15px;">
+            <span data-i18n="hide_country">隐藏国家归属（标记为深空孤岛）</span>
+          </label>
+        </div>
+
+        <!-- Step 4: Review & Transmit -->
+        <div class="step-card-slide" id="step-panel-4">
+          <div class="review-summary-card" id="review-card-container">
+            <!-- Populated by renderStep4Review() -->
+          </div>
+          <button class="btn-transmit" id="btn-submit-echo">
+            <svg class="icon" viewBox="0 0 24 24"><line x1="22" x2="11" y1="2" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            <span data-i18n="btn_submit_echo">发送回声</span>
+          </button>
+        </div>
+
+        <!-- Stepper Navigation -->
+        <div class="sheet-nav-actions" id="wizard-nav-bar">
+          <button class="btn-wizard" id="btn-prev-step" disabled>
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+            <span data-i18n="btn_prev">上一步</span>
+          </button>
+          <button class="btn-wizard primary" id="btn-next-step">
+            <span data-i18n="btn_next">下一步</span>
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODALS ================= -->
+
+  <!-- Identity Modal -->
+  <div class="modal-overlay" id="identity-modal">
+    <div class="modal-window">
+      <div class="modal-top">
+        <h3 class="subtitle-md" data-i18n="modal_identity_title">匿名身份与凭据</h3>
+        <button class="tool-btn" id="btn-close-identity"><svg class="icon" viewBox="0 0 24 24"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg></button>
+      </div>
+      <div class="modal-content-scroll">
+        <div style="margin-bottom: 1.25rem;">
+          <label class="caption-sm" data-i18n="nickname_label" style="display:block; margin-bottom:0.4rem;">你的匿名代号：</label>
+          <div style="display: flex; gap: 0.5rem;">
+            <input type="text" id="input-nickname" class="input-field-standard" maxlength="30" placeholder="例如：星海漫游者 #42">
+            <button class="btn-wizard primary" id="btn-save-nickname" style="width: auto; padding: 0.4rem 1rem; flex:none;" data-i18n="btn_save">保存</button>
+          </div>
+        </div>
+        <div style="margin-bottom: 1.25rem;">
+          <label class="caption-sm" data-i18n="recovery_code_label" style="display:block; margin-bottom:0.4rem;">身份恢复码（换设备/清缓存后恢复身份）：</label>
+          <textarea id="identity-export-text" readonly class="input-field-standard" style="font-family: monospace; font-size: 0.72rem; height: 65px;"></textarea>
+          <button class="btn-wizard" id="btn-copy-identity" style="margin-top: 0.45rem;" data-i18n="btn_copy_code">
             <svg class="icon icon-sm" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
             复制身份恢复码
           </button>
         </div>
-
-        <div class="form-group" style="margin-top: 1.5rem; border-top: 1px solid var(--border-subtle); padding-top: 1.2rem;">
-          <label data-i18n="import_code_label">导入恢复码恢复旧身份：</label>
-          <textarea id="identity-import-text" placeholder="粘贴此前备份的恢复码..." style="font-family: monospace; font-size: 0.72rem; height: 60px;" data-i18n-ph="import_placeholder"></textarea>
-          <button class="btn-submit" id="btn-import-identity" style="margin-top: 0.4rem;" data-i18n="btn_import">恢复该身份</button>
+        <div style="border-top: 1px solid var(--border-subtle); padding-top: 1.2rem;">
+          <label class="caption-sm" data-i18n="import_code_label" style="display:block; margin-bottom:0.4rem;">导入恢复码恢复旧身份：</label>
+          <textarea id="identity-import-text" class="input-field-standard" placeholder="粘贴此前备份的恢复码..." style="font-family: monospace; font-size: 0.72rem; height: 55px;" data-i18n-ph="import_placeholder"></textarea>
+          <button class="btn-wizard" id="btn-import-identity" style="margin-top: 0.45rem;" data-i18n="btn_import">恢复该身份</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 模态框：评论回复 -->
-  <div class="modal-backdrop" id="comment-modal">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3 style="font-size: 0.95rem; font-weight: 500;" data-i18n="modal_comment_title">留言回复</h3>
-        <button class="tool-btn" id="btn-close-comments">
-          <svg class="icon" viewBox="0 0 24 24"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
-        </button>
+  <!-- Comments Modal -->
+  <div class="modal-overlay" id="comment-modal">
+    <div class="modal-window">
+      <div class="modal-top">
+        <h3 class="subtitle-md" data-i18n="modal_comment_title">留言回复</h3>
+        <button class="tool-btn" id="btn-close-comments"><svg class="icon" viewBox="0 0 24 24"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg></button>
       </div>
-      <div class="modal-body">
-        <div id="comment-original-quote" style="padding: 0.8rem; background: rgba(0,0,0,0.25); border-radius: var(--radius-sm); font-size: 0.82rem; margin-bottom: 1rem; color: var(--text-muted); border-left: 2px solid var(--border-subtle);">
-          <!-- 原始留言摘要 -->
+      <div class="modal-content-scroll">
+        <div id="comment-original-quote" style="padding: 0.75rem; background: rgba(0,0,0,0.25); border-radius: var(--radius-sm); font-size: 0.8rem; margin-bottom: 0.9rem; color: var(--text-muted); border-left: 2px solid var(--border-subtle);"></div>
+        <div>
+          <textarea id="comment-input" class="input-field-standard" maxlength="500" placeholder="留下你的善意回应..." data-i18n-ph="reply_placeholder" style="min-height: 80px;"></textarea>
+          <button class="btn-wizard primary" id="btn-submit-comment" style="margin-top: 0.5rem;" data-i18n="btn_reply">发表回复</button>
         </div>
-        
-        <div class="form-group">
-          <textarea id="comment-input" maxlength="500" placeholder="留下你的善意回应..." data-i18n-ph="reply_placeholder"></textarea>
-          <button class="btn-submit" id="btn-submit-comment" style="margin-top: 0.5rem;" data-i18n="btn_reply">发表回复</button>
-        </div>
-
-        <div style="font-size: 0.82rem; font-weight: 500; margin-top: 1.2rem; color: var(--text-dim);" data-i18n="comments_all">全部回应</div>
-        <div class="comment-list" id="modal-comments-container">
-          <div style="font-size: 0.78rem; color: var(--text-dim); text-align: center; padding: 1rem;" data-i18n="no_comments">暂无回应</div>
+        <div style="font-size: 0.8rem; font-weight: 500; margin-top: 1.2rem; color: var(--text-dim);" data-i18n="comments_all">全部回应</div>
+        <div class="comment-feed" id="modal-comments-container">
+          <div style="font-size: 0.75rem; color: var(--text-dim); text-align: center; padding: 1rem;" data-i18n="no_comments">暂无回应</div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 模态框：举报确认 -->
-  <div class="modal-backdrop" id="report-modal">
-    <div class="modal-card" style="max-width: 400px;">
-      <div class="modal-header">
-        <h3 style="font-size: 0.95rem; font-weight: 500;" data-i18n="report_title">举报不良内容</h3>
-        <button class="tool-btn" id="btn-close-report">
-          <svg class="icon" viewBox="0 0 24 24"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
-        </button>
+  <!-- Report Modal (14. Translated option values) -->
+  <div class="modal-overlay" id="report-modal">
+    <div class="modal-window" style="max-width: 420px;">
+      <div class="modal-top">
+        <h3 class="subtitle-md" data-i18n="report_title">举报不良内容</h3>
+        <button class="tool-btn" id="btn-close-report"><svg class="icon" viewBox="0 0 24 24"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg></button>
       </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label data-i18n="report_reason_label">选择违规理由：</label>
-          <select id="report-reason-select" style="width: 100%; padding: 0.65rem; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border-subtle); color: var(--text-main); border-radius: var(--radius-sm); margin-bottom: 0.65rem; font-family: inherit; font-size: 0.85rem;">
-            <option value="恶意辱骂或人身攻击">恶意辱骂或人身攻击</option>
-            <option value="违法有害内容">违法有害内容</option>
-            <option value="垃圾广告骚扰">垃圾广告骚扰</option>
-            <option value="侵犯他人隐私">侵犯他人隐私</option>
-            <option value="其他违规原因">其他违规原因</option>
-          </select>
-          <input type="text" id="report-reason-detail" placeholder="补充详细说明（可选）">
-        </div>
-        <button class="btn-submit" id="btn-confirm-report" style="background: rgba(185, 28, 28, 0.2); border-color: rgba(239, 68, 68, 0.3); color: #FCA5A5;" data-i18n="btn_submit_report">提交举报</button>
+      <div class="modal-content-scroll">
+        <label class="caption-sm" data-i18n="report_reason_label" style="display:block; margin-bottom:0.45rem;">选择违规理由：</label>
+        <select id="report-reason-select" class="input-field-standard" style="margin-bottom: 0.75rem; font-size: 0.82rem;">
+          <option value="report_reason_abuse" data-i18n="report_reason_abuse">恶意辱骂或人身攻击</option>
+          <option value="report_reason_illegal" data-i18n="report_reason_illegal">违法有害内容</option>
+          <option value="report_reason_spam" data-i18n="report_reason_spam">垃圾广告骚扰</option>
+          <option value="report_reason_privacy" data-i18n="report_reason_privacy">侵犯他人隐私</option>
+          <option value="report_reason_other" data-i18n="report_reason_other">其他违规原因</option>
+        </select>
+        <input type="text" id="report-reason-detail" class="input-field-standard" placeholder="补充详细说明（可选）" data-i18n-ph="report_detail_placeholder" style="margin-bottom: 1.2rem;">
+        <button class="btn-wizard" id="btn-confirm-report" style="background: rgba(185, 28, 28, 0.2); border-color: rgba(239, 68, 68, 0.35); color: #FCA5A5;" data-i18n="btn_submit_report">提交举报</button>
       </div>
     </div>
   </div>
 
-  <!-- Toast 提示容器 -->
-  <div class="toast" id="toast-el">提示信息</div>
+  <!-- Toast -->
+  <div class="toast-popup" id="toast-el">提示信息</div>
+
+  <!-- ================= 11. MINIMAL FOOTER ================= -->
+  <footer class="site-bottom-footer">
+    WORLD ECHO &copy; 2024 &middot; <a href="https://github.com" target="_blank" rel="noopener">Open Source</a> &middot; <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+  </footer>
 
   <script>
     // ================= 治愈系低饱和度情绪调色字典 =================
     const EMOTION_MAP = {
-      calm: { label: "平静", color: "#7BA5A1", bg: "rgba(123, 165, 161, 0.12)", border: "rgba(123, 165, 161, 0.25)" },
-      happy: { label: "开心", color: "#C4B59D", bg: "rgba(196, 181, 157, 0.12)", border: "rgba(196, 181, 157, 0.25)" },
+      calm:    { label: "平静", color: "#7BA5A1", bg: "rgba(123, 165, 161, 0.12)", border: "rgba(123, 165, 161, 0.25)" },
+      happy:   { label: "开心", color: "#C4B59D", bg: "rgba(196, 181, 157, 0.12)", border: "rgba(196, 181, 157, 0.25)" },
       hopeful: { label: "希望", color: "#8BA57D", bg: "rgba(139, 165, 125, 0.12)", border: "rgba(139, 165, 125, 0.25)" },
-      lonely: { label: "孤独", color: "#7D8BA5", bg: "rgba(125, 139, 165, 0.12)", border: "rgba(125, 139, 165, 0.25)" },
-      tired: { label: "疲惫", color: "#8C867D", bg: "rgba(140, 134, 125, 0.12)", border: "rgba(140, 134, 125, 0.25)" },
-      love: { label: "温暖", color: "#B58787", bg: "rgba(181, 135, 135, 0.12)", border: "rgba(181, 135, 135, 0.25)" },
-      sad: { label: "难过", color: "#7D8FA5", bg: "rgba(125, 143, 165, 0.12)", border: "rgba(125, 143, 165, 0.25)" },
+      lonely:  { label: "孤独", color: "#7D8BA5", bg: "rgba(125, 139, 165, 0.12)", border: "rgba(125, 139, 165, 0.25)" },
+      tired:   { label: "疲惫", color: "#8C867D", bg: "rgba(140, 134, 125, 0.12)", border: "rgba(140, 134, 125, 0.25)" },
+      love:    { label: "温暖", color: "#B58787", bg: "rgba(181, 135, 135, 0.12)", border: "rgba(181, 135, 135, 0.25)" },
+      sad:     { label: "难过", color: "#7D8FA5", bg: "rgba(125, 143, 165, 0.12)", border: "rgba(125, 143, 165, 0.25)" },
       anxious: { label: "焦虑", color: "#9E8CA5", bg: "rgba(158, 140, 165, 0.12)", border: "rgba(158, 140, 165, 0.25)" },
-      angry: { label: "愤怒", color: "#A57D7D", bg: "rgba(165, 125, 125, 0.12)", border: "rgba(165, 125, 125, 0.25)" },
+      angry:   { label: "愤怒", color: "#A57D7D", bg: "rgba(165, 125, 125, 0.12)", border: "rgba(165, 125, 125, 0.25)" },
     };
-
     const EMOTION_KEYS = Object.keys(EMOTION_MAP);
 
-    // ================= 多语言词典 (移除 Emoji，纯净排版) =================
+    // ================= 多语言词典 (9 Languages, Complete) =================
     const I18N = {
       zh: {
-        site_title: "WORLD ECHO",
-        site_subtitle: "世界回声 · 静谧之境",
-        user_default: "回声旅人",
-        sun_subsolar: "太阳直射",
-        filter_all_time: "全球时空",
-        filter_day_only: "昼间之境",
-        filter_night_only: "夜幕低垂",
-        legend_voice: "声音回声",
-        legend_text: "文字信笺",
-        legend_sun: "晨昏光影",
-        world_mood_title: "世界情绪天气",
-        mood_summary: "收集 {count} 缕心声",
+        site_title: "WORLD ECHO", site_subtitle: "世界回声 · 静谧之境",
+        user_default: "回声旅人", sun_subsolar: "太阳直射",
+        filter_all_time: "全球时空", filter_day_only: "昼间之境", filter_night_only: "夜幕低垂",
+        legend_voice: "声音回声", legend_text: "文字信笺", legend_sun: "晨昏光影",
+        world_mood_title: "世界情绪天气", mood_summary: "收集 {count} 缕心声",
+        sidebar_desc: "每一次发声，都与当下的晨昏线交融。匿名、真实、远离算法喧嚣，倾听世界另一端的轻声叹息。",
+        scroll_explore: "探索回声",
         composer_title: "发射回声",
-        tab_voice: "录制声音",
-        tab_text: "抒写文字",
-        mode_voice: "声音模式",
-        mode_text: "文字模式",
+        tab_voice: "录制声音", tab_text: "抒写文字",
+        mode_voice: "声音模式", mode_text: "文字模式",
+        step_1_hint: "请选择这束回声的表达形式：", text_limit_hint: "最多 1000 字符信笺",
         rec_limit: "最长 60 秒原生立体声录制",
-        btn_start_rec: "开始录音",
-        btn_stop_rec: "完成录制",
-        btn_rerecord: "重新录音",
+        btn_start_rec: "开始录音", btn_stop_rec: "完成录制", btn_rerecord: "重新录音",
         voice_caption_placeholder: "为这束回声附上一句话（可选）...",
         text_placeholder: "这一刻，你在世界哪处，经历着怎样的心境？",
         mood_label: "此刻心境：",
         hide_country: "隐藏国家归属（标记为深空孤岛）",
-        btn_submit_echo: "发送回声",
-        submitting: "正在穿透大气层上传...",
-        stream_global: "全球漫游",
-        btn_back_global: "返回全球",
-        filter_all: "全部",
-        filter_voice: "声音",
-        filter_text: "文字",
-        sort_latest: "最新",
-        sort_popular: "热门",
-        sort_random: "漫游",
+        btn_submit_echo: "发送回声", submitting: "正在穿透大气层上传...",
+        stream_global: "全球漫游", btn_back_global: "返回全球",
+        filter_all: "全部", filter_voice: "声音", filter_text: "文字",
+        sort_latest: "最新", sort_popular: "热门", sort_random: "漫游",
         loading_stream: "正在调频宇宙接收器...",
         empty_stream: "当前维度未探测到回声，成为第一个发声者吧",
-        just_now: "刚刚",
-        mins_ago: "分钟前",
-        hours_ago: "小时前",
-        days_ago: "天前",
+        just_now: "刚刚", mins_ago: "分钟前", hours_ago: "小时前", days_ago: "天前",
         modal_identity_title: "匿名身份与凭据",
-        nickname_label: "你的匿名代号：",
-        btn_save: "保存",
+        nickname_label: "你的匿名代号：", btn_save: "保存",
         recovery_code_label: "身份恢复码（换设备/清缓存后恢复身份）：",
         btn_copy_code: "复制身份恢复码",
         import_code_label: "导入恢复码恢复旧身份：",
         import_placeholder: "粘贴此前备份的恢复码...",
         btn_import: "恢复该身份",
-        modal_comment_title: "留言回复",
-        btn_reply: "发表回复",
+        modal_comment_title: "留言回复", btn_reply: "发表回复",
         reply_placeholder: "留下你的善意回应...",
-        comments_all: "全部回应",
-        no_comments: "暂无回应",
-        report_title: "举报不良内容",
-        report_reason_label: "选择违规理由：",
+        comments_all: "全部回应", no_comments: "暂无回应",
+        report_title: "举报不良内容", report_reason_label: "选择违规理由：",
+        report_reason_abuse: "恶意辱骂或人身攻击", report_reason_illegal: "违法有害内容",
+        report_reason_spam: "垃圾广告骚扰", report_reason_privacy: "侵犯他人隐私",
+        report_reason_other: "其他违规原因", report_detail_placeholder: "补充详细说明（可选）",
         btn_submit_report: "提交举报",
-        btn_delete: "删除",
-        btn_report: "举报",
-        day_status_tag: "昼",
-        night_status_tag: "夜",
-        twilight_status_tag: "晨昏",
-        emotion_calm: "平静",
-        emotion_happy: "开心",
-        emotion_hopeful: "希望",
-        emotion_lonely: "孤独",
-        emotion_tired: "疲惫",
-        emotion_love: "温暖",
-        emotion_sad: "难过",
-        emotion_anxious: "焦虑",
-        emotion_angry: "愤怒",
+        btn_delete: "删除", btn_report: "举报",
+        day_status_tag: "昼", night_status_tag: "夜", twilight_status_tag: "晨昏",
+        emotion_calm: "平静", emotion_happy: "开心", emotion_hopeful: "希望",
+        emotion_lonely: "孤独", emotion_tired: "疲惫", emotion_love: "温暖",
+        emotion_sad: "难过", emotion_anxious: "焦虑", emotion_angry: "愤怒",
+        step_type: "类型", step_content: "内容", step_mood: "心境", step_send: "发送",
+        review_type: "表达形式", review_content: "内容摘要", review_mood: "选定心境", review_location: "发送位置",
+        deep_space_island: "深空孤岛",
+        btn_prev: "上一步", btn_next: "下一步",
+        globe_tooltip_status_day: "日照之下", globe_tooltip_status_night: "夜幕之下",
+        globe_tooltip_echoes: "回声", globe_tooltip_voices: "声音",
       },
       en: {
-        site_title: "WORLD ECHO",
-        site_subtitle: "World Echo · Serene Haven",
-        user_default: "Echo Voyager",
-        sun_subsolar: "Subsolar Point",
-        filter_all_time: "Global Horizon",
-        filter_day_only: "In Daylight",
-        filter_night_only: "In Nightfall",
-        legend_voice: "Voice Echo",
-        legend_text: "Written Letter",
-        legend_sun: "Terminator Light",
-        world_mood_title: "World Mood Weather",
-        mood_summary: "{count} voices gathered",
+        site_title: "WORLD ECHO", site_subtitle: "World Echo · Serene Haven",
+        user_default: "Echo Voyager", sun_subsolar: "Subsolar Point",
+        filter_all_time: "Global Horizon", filter_day_only: "In Daylight", filter_night_only: "In Nightfall",
+        legend_voice: "Voice Echo", legend_text: "Written Letter", legend_sun: "Terminator Light",
+        world_mood_title: "World Mood Weather", mood_summary: "{count} voices gathered",
+        sidebar_desc: "Every echo blends with the real-time day/night terminator. Anonymous, authentic, and peaceful.",
+        scroll_explore: "Explore Echoes",
         composer_title: "Broadcast Echo",
-        tab_voice: "Record Voice",
-        tab_text: "Write Text",
-        mode_voice: "Voice Mode",
-        mode_text: "Text Mode",
+        tab_voice: "Record Voice", tab_text: "Write Text",
+        mode_voice: "Voice Mode", mode_text: "Text Mode",
+        step_1_hint: "Choose your medium of expression:", text_limit_hint: "Up to 1000 characters",
         rec_limit: "Up to 60s stereo recording",
-        btn_start_rec: "Start Recording",
-        btn_stop_rec: "Finish Recording",
-        btn_rerecord: "Re-record",
+        btn_start_rec: "Start Recording", btn_stop_rec: "Finish Recording", btn_rerecord: "Re-record",
         voice_caption_placeholder: "Add an optional line for this echo...",
         text_placeholder: "Where are you in this moment, and what does your heart feel?",
-        mood_label: "Current Mood:",
-        hide_country: "Hide my country (Mark as Deep Space Island)",
-        btn_submit_echo: "Transmit Echo",
-        submitting: "Broadcasting into the deep...",
-        stream_global: "Global Stream",
-        btn_back_global: "Back to Global",
-        filter_all: "All",
-        filter_voice: "Voice",
-        filter_text: "Text",
-        sort_latest: "Latest",
-        sort_popular: "Popular",
-        sort_random: "Wander",
+        mood_label: "Current Mood:", hide_country: "Hide my country (Mark as Deep Space Island)",
+        btn_submit_echo: "Transmit Echo", submitting: "Broadcasting into the deep...",
+        stream_global: "Global Stream", btn_back_global: "Back to Global",
+        filter_all: "All", filter_voice: "Voice", filter_text: "Text",
+        sort_latest: "Latest", sort_popular: "Popular", sort_random: "Wander",
         loading_stream: "Tuning cosmic frequencies...",
         empty_stream: "No echoes detected in this dimension yet.",
-        just_now: "Just now",
-        mins_ago: "m ago",
-        hours_ago: "h ago",
-        days_ago: "d ago",
+        just_now: "Just now", mins_ago: "m ago", hours_ago: "h ago", days_ago: "d ago",
         modal_identity_title: "Anonymous Identity & Key",
-        nickname_label: "Your Anonymous Handle:",
-        btn_save: "Save",
+        nickname_label: "Your Anonymous Handle:", btn_save: "Save",
         recovery_code_label: "Identity Recovery Code:",
         btn_copy_code: "Copy Recovery Code",
         import_code_label: "Import Recovery Code:",
         import_placeholder: "Paste your recovery code here...",
         btn_import: "Restore Identity",
-        modal_comment_title: "Echo Replies",
-        btn_reply: "Send Reply",
+        modal_comment_title: "Echo Replies", btn_reply: "Send Reply",
         reply_placeholder: "Leave a warm, quiet reply...",
-        comments_all: "All Replies",
-        no_comments: "No replies yet",
-        report_title: "Report Content",
-        report_reason_label: "Reason for report:",
+        comments_all: "All Replies", no_comments: "No replies yet",
+        report_title: "Report Content", report_reason_label: "Reason for report:",
+        report_reason_abuse: "Harassment or personal attack", report_reason_illegal: "Illegal or harmful content",
+        report_reason_spam: "Spam or advertising", report_reason_privacy: "Privacy violation",
+        report_reason_other: "Other violation", report_detail_placeholder: "Additional details (optional)",
         btn_submit_report: "Submit Report",
-        btn_delete: "Delete",
-        btn_report: "Report",
-        day_status_tag: "Day",
-        night_status_tag: "Night",
-        twilight_status_tag: "Twilight",
-        emotion_calm: "Calm",
-        emotion_happy: "Joy",
-        emotion_hopeful: "Hope",
-        emotion_lonely: "Lonely",
-        emotion_tired: "Weary",
-        emotion_love: "Warmth",
-        emotion_sad: "Sad",
-        emotion_anxious: "Anxious",
-        emotion_angry: "Angry",
+        btn_delete: "Delete", btn_report: "Report",
+        day_status_tag: "Day", night_status_tag: "Night", twilight_status_tag: "Twilight",
+        emotion_calm: "Calm", emotion_happy: "Joy", emotion_hopeful: "Hope",
+        emotion_lonely: "Lonely", emotion_tired: "Weary", emotion_love: "Warmth",
+        emotion_sad: "Sad", emotion_anxious: "Anxious", emotion_angry: "Angry",
+        step_type: "Type", step_content: "Content", step_mood: "Mood", step_send: "Send",
+        review_type: "Format", review_content: "Preview", review_mood: "Mood", review_location: "Origin",
+        deep_space_island: "Deep Space Island",
+        btn_prev: "Previous", btn_next: "Next",
+        globe_tooltip_status_day: "In daylight", globe_tooltip_status_night: "In nightfall",
+        globe_tooltip_echoes: "Echoes", globe_tooltip_voices: "Voices",
       },
       ja: {
-        site_title: "WORLD ECHO",
-        site_subtitle: "ワールドエコー · 静謐の彼方",
-        user_default: "エコー旅人",
-        sun_subsolar: "太陽直下点",
-        filter_all_time: "全ての時間帯",
-        filter_day_only: "昼の国",
-        filter_night_only: "夜の国",
-        legend_voice: "音声エコー",
-        legend_text: "手紙",
-        legend_sun: "晨昏光影",
-        world_mood_title: "世界の心の天気",
-        mood_summary: "{count} 件の心声",
+        site_title: "WORLD ECHO", site_subtitle: "ワールドエコー · 静謐の彼方",
+        user_default: "エコー旅人", sun_subsolar: "太陽直下点",
+        filter_all_time: "全ての時間帯", filter_day_only: "昼の国", filter_night_only: "夜の国",
+        legend_voice: "音声エコー", legend_text: "手紙", legend_sun: "晨昏光影",
+        world_mood_title: "世界の心の天気", mood_summary: "{count} 件の心声",
+        sidebar_desc: "日没と夜明けの狭間で、世界中の見知らぬ人々と静かに響き合います。",
+        scroll_explore: "エコーを巡る",
         composer_title: "エコーを発信",
-        tab_voice: "音声を録音",
-        tab_text: "テキストを綴る",
-        mode_voice: "音声モード",
-        mode_text: "テキストモード",
+        tab_voice: "音声を録音", tab_text: "テキストを綴る",
+        mode_voice: "音声モード", mode_text: "テキストモード",
+        step_1_hint: "表現の形式を選択してください：", text_limit_hint: "最大 1000 文字",
         rec_limit: "最大 60 秒の録音",
-        btn_start_rec: "録音開始",
-        btn_stop_rec: "録音完了",
-        btn_rerecord: "再録音",
+        btn_start_rec: "録音開始", btn_stop_rec: "録音完了", btn_rerecord: "再録音",
         voice_caption_placeholder: "言葉を添える（任意）...",
         text_placeholder: "今、世界のどこで、どんな気持ちでいますか？",
-        mood_label: "今の気持ち：",
-        hide_country: "国籍を隠す（深宇宙の孤島として）",
-        btn_submit_echo: "エコーを送信",
-        submitting: "大気圏を越えて送信中...",
-        stream_global: "世界のエコー",
-        btn_back_global: "世界全体へ",
-        filter_all: "全て",
-        filter_voice: "音声",
-        filter_text: "テキスト",
-        sort_latest: "新着順",
-        sort_popular: "人気順",
-        sort_random: "漫遊",
+        mood_label: "今の気持ち：", hide_country: "国籍を隠す（深宇宙の孤島として）",
+        btn_submit_echo: "エコーを送信", submitting: "大気圏を越えて送信中...",
+        stream_global: "世界のエコー", btn_back_global: "世界全体へ",
+        filter_all: "全て", filter_voice: "音声", filter_text: "テキスト",
+        sort_latest: "新着順", sort_popular: "人気順", sort_random: "漫遊",
         loading_stream: "周波数を調整中...",
         empty_stream: "まだエコーがありません。",
-        just_now: "たった今",
-        mins_ago: "分前",
-        hours_ago: "時間前",
-        days_ago: "日前",
+        just_now: "たった今", mins_ago: "分前", hours_ago: "時間前", days_ago: "日前",
         modal_identity_title: "匿名ID＆キー",
-        nickname_label: "あなたの匿名ネーム：",
-        btn_save: "保存",
-        recovery_code_label: "復元コード：",
-        btn_copy_code: "コードをコピー",
-        import_code_label: "コードを読み込む：",
-        import_placeholder: "復元コードを貼り付け...",
+        nickname_label: "あなたの匿名ネーム：", btn_save: "保存",
+        recovery_code_label: "復元コード：", btn_copy_code: "コードをコピー",
+        import_code_label: "コードを読み込む：", import_placeholder: "復元コードを貼り付け...",
         btn_import: "IDを復元",
-        modal_comment_title: "返信スレッド",
-        btn_reply: "返信を送信",
+        modal_comment_title: "返信スレッド", btn_reply: "返信を送信",
         reply_placeholder: "温かい返信を残しましょう...",
-        comments_all: "すべての返信",
-        no_comments: "返信はまだありません",
-        report_title: "違反通報",
-        report_reason_label: "通報理由：",
+        comments_all: "すべての返信", no_comments: "返信はまだありません",
+        report_title: "違反通報", report_reason_label: "通報理由：",
+        report_reason_abuse: "嫌がらせ・誹謗中傷", report_reason_illegal: "違法・有害コンテンツ",
+        report_reason_spam: "スパム・広告", report_reason_privacy: "プライバシー侵害",
+        report_reason_other: "その他の違反", report_detail_placeholder: "詳細説明（任意）",
         btn_submit_report: "通報を送信",
-        btn_delete: "削除",
-        btn_report: "通報",
-        day_status_tag: "昼",
-        night_status_tag: "夜",
-        twilight_status_tag: "薄明",
-        emotion_calm: "穏やか",
-        emotion_happy: "喜び",
-        emotion_hopeful: "希望",
-        emotion_lonely: "孤独",
-        emotion_tired: "疲れ",
-        emotion_love: "温もり",
-        emotion_sad: "悲哀",
-        emotion_anxious: "不安",
-        emotion_angry: "怒り",
+        btn_delete: "削除", btn_report: "通報",
+        day_status_tag: "昼", night_status_tag: "夜", twilight_status_tag: "薄明",
+        emotion_calm: "穏やか", emotion_happy: "喜び", emotion_hopeful: "希望",
+        emotion_lonely: "孤独", emotion_tired: "疲れ", emotion_love: "温もり",
+        emotion_sad: "悲哀", emotion_anxious: "不安", emotion_angry: "怒り",
+        step_type: "タイプ", step_content: "内容", step_mood: "気持ち", step_send: "送信",
+        review_type: "形式", review_content: "概要", review_mood: "気分", review_location: "場所",
+        deep_space_island: "深宇宙の孤島",
+        btn_prev: "前へ", btn_next: "次へ",
+        globe_tooltip_status_day: "日中", globe_tooltip_status_night: "夜間",
+        globe_tooltip_echoes: "エコー", globe_tooltip_voices: "音声",
       },
       ko: {
-        site_title: "WORLD ECHO",
-        site_subtitle: "월드 에코 · 고요한 울림",
-        user_default: "에코 여행자",
-        sun_subsolar: "태양 직하점",
-        filter_all_time: "전체 시공간",
-        filter_day_only: "낮의 영역",
-        filter_night_only: "밤의 영역",
-        legend_voice: "음성 에코",
-        legend_text: "문자 서신",
-        legend_sun: "주야간 경계",
-        world_mood_title: "세계 감정 날씨",
-        mood_summary: "{count}개의 마음의 소리",
+        site_title: "WORLD ECHO", site_subtitle: "월드 에코 · 고요한 울림",
+        user_default: "에코 여행자", sun_subsolar: "태양 직하점",
+        filter_all_time: "전체 시공간", filter_day_only: "낮의 영역", filter_night_only: "밤의 영역",
+        legend_voice: "음성 에코", legend_text: "문자 서신", legend_sun: "주야간 경계",
+        world_mood_title: "세계 감정 날씨", mood_summary: "{count}개의 마음의 소리",
+        sidebar_desc: "실시간 주야간 경계선 위에서 전 세계의 낯선 이들과 고요히 이어집니다.",
+        scroll_explore: "에코 탐색",
         composer_title: "에코 송출",
-        tab_voice: "음성 녹음",
-        tab_text: "글 쓰기",
-        mode_voice: "음성 모드",
-        mode_text: "텍스트 모드",
+        tab_voice: "음성 녹음", tab_text: "글 쓰기",
+        mode_voice: "음성 모드", mode_text: "텍스트 모드",
+        step_1_hint: "표현 방식을 선택하세요:", text_limit_hint: "최대 1000자",
         rec_limit: "최대 60초 녹음",
-        btn_start_rec: "녹음 시작",
-        btn_stop_rec: "녹음 완료",
-        btn_rerecord: "다시 녹음",
+        btn_start_rec: "녹음 시작", btn_stop_rec: "녹음 완료", btn_rerecord: "다시 녹음",
         voice_caption_placeholder: "한 줄 소감을 덧붙여보세요 (선택)...",
         text_placeholder: "지금 이 순간, 세상 어디에서 어떤 마음으로 계신가요?",
-        mood_label: "현재 마음:",
-        hide_country: "국가 숨기기 (심우주 섬으로 표시)",
-        btn_submit_echo: "에코 전송",
-        submitting: "대기권을 넘어 전송 중...",
-        stream_global: "글로벌 피드",
-        btn_back_global: "전 세계로",
-        filter_all: "전체",
-        filter_voice: "음성",
-        filter_text: "텍스트",
-        sort_latest: "최신순",
-        sort_popular: "인기순",
-        sort_random: "탐색",
+        mood_label: "현재 마음:", hide_country: "국가 숨기기 (심우주 섬으로 표시)",
+        btn_submit_echo: "에코 전송", submitting: "대기권을 넘어 전송 중...",
+        stream_global: "글로벌 피드", btn_back_global: "전 세계로",
+        filter_all: "전체", filter_voice: "음성", filter_text: "텍스트",
+        sort_latest: "최신순", sort_popular: "인기순", sort_random: "탐색",
         loading_stream: "우주 주파수 맞추는 중...",
         empty_stream: "아직 감지된 에코가 없습니다.",
-        just_now: "방금 전",
-        mins_ago: "분 전",
-        hours_ago: "시간 전",
-        days_ago: "일 전",
+        just_now: "방금 전", mins_ago: "분 전", hours_ago: "시간 전", days_ago: "일 전",
         modal_identity_title: "익명 신원 및 키",
-        nickname_label: "익명 닉네임:",
-        btn_save: "저장",
-        recovery_code_label: "신원 복원 코드:",
-        btn_copy_code: "코드 복사",
-        import_code_label: "코드 입력:",
-        import_placeholder: "복원 코드를 붙여넣으세요...",
+        nickname_label: "익명 닉네임:", btn_save: "저장",
+        recovery_code_label: "신원 복원 코드:", btn_copy_code: "코드 복사",
+        import_code_label: "코드 입력:", import_placeholder: "복원 코드를 붙여넣으세요...",
         btn_import: "신원 복원",
-        modal_comment_title: "댓글 및 응답",
-        btn_reply: "답글 등록",
+        modal_comment_title: "댓글 및 응답", btn_reply: "답글 등록",
         reply_placeholder: "따뜻한 응답을 남겨주세요...",
-        comments_all: "전체 응답",
-        no_comments: "아직 응답이 없습니다",
-        report_title: "신고하기",
-        report_reason_label: "신고 사유:",
+        comments_all: "전체 응답", no_comments: "아직 응답이 없습니다",
+        report_title: "신고하기", report_reason_label: "신고 사유:",
+        report_reason_abuse: "악성 비방 또는 인신공격", report_reason_illegal: "불법·유해 콘텐츠",
+        report_reason_spam: "스팸·광고", report_reason_privacy: "개인정보 침해",
+        report_reason_other: "기타 위반", report_detail_placeholder: "추가 설명 (선택)",
         btn_submit_report: "신고 제출",
-        btn_delete: "삭제",
-        btn_report: "신고",
-        day_status_tag: "낮",
-        night_status_tag: "밤",
-        twilight_status_tag: "여명",
-        emotion_calm: "평온",
-        emotion_happy: "기쁨",
-        emotion_hopeful: "희망",
-        emotion_lonely: "외로움",
-        emotion_tired: "지침",
-        emotion_love: "따스함",
-        emotion_sad: "슬픔",
-        emotion_anxious: "불안",
-        emotion_angry: "분노",
+        btn_delete: "삭제", btn_report: "신고",
+        day_status_tag: "낮", night_status_tag: "밤", twilight_status_tag: "여명",
+        emotion_calm: "평온", emotion_happy: "기쁨", emotion_hopeful: "희망",
+        emotion_lonely: "외로움", emotion_tired: "지침", emotion_love: "따스함",
+        emotion_sad: "슬픔", emotion_anxious: "불안", emotion_angry: "분노",
+        step_type: "유형", step_content: "내용", step_mood: "감정", step_send: "전송",
+        review_type: "형식", review_content: "미리보기", review_mood: "마음", review_location: "위치",
+        deep_space_island: "심우주 섬",
+        btn_prev: "이전", btn_next: "다음",
+        globe_tooltip_status_day: "낮 시간", globe_tooltip_status_night: "밤 시간",
+        globe_tooltip_echoes: "에코", globe_tooltip_voices: "음성",
       },
       es: {
-        site_title: "WORLD ECHO",
-        site_subtitle: "World Echo · Calma Profunda",
-        user_default: "Viajero del Eco",
-        sun_subsolar: "Punto Subsolar",
-        filter_all_time: "Horizonte Global",
-        filter_day_only: "Bajo la Luz",
-        filter_night_only: "En la Noche",
-        legend_voice: "Eco de Voz",
-        legend_text: "Carta Escrita",
-        legend_sun: "Terminador Solar",
-        world_mood_title: "Clima Emocional",
-        mood_summary: "{count} voces",
-        composer_title: "Transmitir Eco",
-        tab_voice: "Grabar Voz",
-        tab_text: "Escribir Texto",
-        mode_voice: "Modo Voz",
-        mode_text: "Modo Texto",
+        site_title: "WORLD ECHO", site_subtitle: "World Echo · Calma Profunda",
+        user_default: "Viajero del Eco", sun_subsolar: "Punto Subsolar",
+        filter_all_time: "Horizonte Global", filter_day_only: "Bajo la Luz", filter_night_only: "En la Noche",
+        legend_voice: "Eco de Voz", legend_text: "Carta Escrita", legend_sun: "Terminador Solar",
+        world_mood_title: "Clima Emocional", mood_summary: "{count} voces",
+        sidebar_desc: "Cada eco viaja a través de la línea del crepúsculo en tiempo real.",
+        scroll_explore: "Explorar Ecos",
+        composer_title: "Transmitir Eco", tab_voice: "Grabar Voz", tab_text: "Escribir Texto",
+        mode_voice: "Modo Voz", mode_text: "Modo Texto",
+        step_1_hint: "Elige la forma de expresión:", text_limit_hint: "Hasta 1000 caracteres",
         rec_limit: "Hasta 60s de grabación",
-        btn_start_rec: "Iniciar Grabación",
-        btn_stop_rec: "Finalizar",
-        btn_rerecord: "Grabar de Nuevo",
+        btn_start_rec: "Iniciar Grabación", btn_stop_rec: "Finalizar", btn_rerecord: "Grabar de Nuevo",
         voice_caption_placeholder: "Añade una línea opcional...",
         text_placeholder: "¿En qué lugar del mundo estás y qué sientes ahora?",
-        mood_label: "Estado de ánimo:",
-        hide_country: "Ocultar país (Isla del Espacio)",
-        btn_submit_echo: "Transmitir",
-        submitting: "Transmitiendo...",
-        stream_global: "Flujo Global",
-        btn_back_global: "Volver",
-        filter_all: "Todos",
-        filter_voice: "Voz",
-        filter_text: "Texto",
-        sort_latest: "Recientes",
-        sort_popular: "Populares",
-        sort_random: "Vagabundo",
-        loading_stream: "Sintonizando frecuencias...",
-        empty_stream: "Aún no hay ecos en esta dimensión.",
-        just_now: "Ahora",
-        mins_ago: "m antes",
-        hours_ago: "h antes",
-        days_ago: "d antes",
-        modal_identity_title: "Identidad Anónima",
-        nickname_label: "Apodo:",
-        btn_save: "Guardar",
-        recovery_code_label: "Código de recuperación:",
-        btn_copy_code: "Copiar Código",
-        import_code_label: "Importar Código:",
-        import_placeholder: "Pega el código...",
+        mood_label: "Estado de ánimo:", hide_country: "Ocultar país (Isla del Espacio)",
+        btn_submit_echo: "Transmitir", submitting: "Transmitiendo...",
+        stream_global: "Flujo Global", btn_back_global: "Volver",
+        filter_all: "Todos", filter_voice: "Voz", filter_text: "Texto",
+        sort_latest: "Recientes", sort_popular: "Populares", sort_random: "Vagabundo",
+        loading_stream: "Sintonizando frecuencias...", empty_stream: "Aún no hay ecos en esta dimensión.",
+        just_now: "Ahora", mins_ago: "m antes", hours_ago: "h antes", days_ago: "d antes",
+        modal_identity_title: "Identidad Anónima", nickname_label: "Apodo:", btn_save: "Guardar",
+        recovery_code_label: "Código de recuperación:", btn_copy_code: "Copiar Código",
+        import_code_label: "Importar Código:", import_placeholder: "Pega el código...",
         btn_import: "Restaurar",
-        modal_comment_title: "Respuestas",
-        btn_reply: "Responder",
+        modal_comment_title: "Respuestas", btn_reply: "Responder",
         reply_placeholder: "Deja un pensamiento amable...",
-        comments_all: "Respuestas",
-        no_comments: "Aún no hay respuestas",
-        report_title: "Reportar",
-        report_reason_label: "Motivo:",
+        comments_all: "Respuestas", no_comments: "Aún no hay respuestas",
+        report_title: "Reportar", report_reason_label: "Motivo:",
+        report_reason_abuse: "Acoso o ataques personales", report_reason_illegal: "Contenido ilegal o dañino",
+        report_reason_spam: "Spam o publicidad", report_reason_privacy: "Violación de privacidad",
+        report_reason_other: "Otra infracción", report_detail_placeholder: "Detalles adicionales (opcional)",
         btn_submit_report: "Enviar",
-        btn_delete: "Eliminar",
-        btn_report: "Reportar",
-        day_status_tag: "Día",
-        night_status_tag: "Noche",
-        twilight_status_tag: "Crepúsculo",
-        emotion_calm: "Calma",
-        emotion_happy: "Alegría",
-        emotion_hopeful: "Esperanza",
-        emotion_lonely: "Soledad",
-        emotion_tired: "Cansancio",
-        emotion_love: "Calidez",
-        emotion_sad: "Tristeza",
-        emotion_anxious: "Ansiedad",
-        emotion_angry: "Furia",
+        btn_delete: "Eliminar", btn_report: "Reportar",
+        day_status_tag: "Día", night_status_tag: "Noche", twilight_status_tag: "Crepúsculo",
+        emotion_calm: "Calma", emotion_happy: "Alegría", emotion_hopeful: "Esperanza",
+        emotion_lonely: "Soledad", emotion_tired: "Cansancio", emotion_love: "Calidez",
+        emotion_sad: "Tristeza", emotion_anxious: "Ansiedad", emotion_angry: "Furia",
+        step_type: "Tipo", step_content: "Contenido", step_mood: "Ánimo", step_send: "Enviar",
+        review_type: "Formato", review_content: "Vista previa", review_mood: "Ánimo", review_location: "Origen",
+        deep_space_island: "Isla del Espacio",
+        btn_prev: "Anterior", btn_next: "Siguiente",
+        globe_tooltip_status_day: "De día", globe_tooltip_status_night: "De noche",
+        globe_tooltip_echoes: "Ecos", globe_tooltip_voices: "Voces",
       },
       fr: {
-        site_title: "WORLD ECHO",
-        site_subtitle: "World Echo · Havre de Paix",
-        user_default: "Voyageur d'Écho",
-        sun_subsolar: "Point Sub-solaire",
-        filter_all_time: "Horizon Global",
-        filter_day_only: "En Plein Jour",
-        filter_night_only: "Dans la Nuit",
-        legend_voice: "Écho Vocal",
-        legend_text: "Lettre Écrite",
-        legend_sun: "Ombre et Lumière",
-        world_mood_title: "Météo Émotionnelle",
-        mood_summary: "{count} voix",
-        composer_title: "Émettre un Écho",
-        tab_voice: "Enregistrer Voix",
-        tab_text: "Écrire Texte",
-        mode_voice: "Mode Voix",
-        mode_text: "Mode Texte",
+        site_title: "WORLD ECHO", site_subtitle: "World Echo · Havre de Paix",
+        user_default: "Voyageur d'Écho", sun_subsolar: "Point Sub-solaire",
+        filter_all_time: "Horizon Global", filter_day_only: "En Plein Jour", filter_night_only: "Dans la Nuit",
+        legend_voice: "Écho Vocal", legend_text: "Lettre Écrite", legend_sun: "Ombre et Lumière",
+        world_mood_title: "Météo Émotionnelle", mood_summary: "{count} voix",
+        sidebar_desc: "Chaque écho traverse la ligne du terminateur jour/nuit en direct.",
+        scroll_explore: "Explorer les Échos",
+        composer_title: "Émettre un Écho", tab_voice: "Enregistrer Voix", tab_text: "Écrire Texte",
+        mode_voice: "Mode Voix", mode_text: "Mode Texte",
+        step_1_hint: "Choisissez votre mode d'expression :", text_limit_hint: "Jusqu'à 1000 caractères",
         rec_limit: "Jusqu'à 60s d'enregistrement",
-        btn_start_rec: "Enregistrer",
-        btn_stop_rec: "Terminer",
-        btn_rerecord: "Réenregistrer",
+        btn_start_rec: "Enregistrer", btn_stop_rec: "Terminer", btn_rerecord: "Réenregistrer",
         voice_caption_placeholder: "Ajoutez une ligne discrète...",
         text_placeholder: "Où êtes-vous en ce moment, qu'éprouvez-vous ?",
-        mood_label: "Humeur actuelle :",
-        hide_country: "Masquer le pays (Île Céleste)",
-        btn_submit_echo: "Émettre",
-        submitting: "Diffusion...",
-        stream_global: "Flux Mondial",
-        btn_back_global: "Vue Globale",
-        filter_all: "Tous",
-        filter_voice: "Voix",
-        filter_text: "Texte",
-        sort_latest: "Récents",
-        sort_popular: "Populaires",
-        sort_random: "Errer",
-        loading_stream: "Réglage des fréquences...",
-        empty_stream: "Aucun écho dans cette dimension.",
-        just_now: "À l'instant",
-        mins_ago: "min plus tôt",
-        hours_ago: "h plus tôt",
-        days_ago: "j plus tôt",
-        modal_identity_title: "Identité Anonyme",
-        nickname_label: "Pseudonyme :",
-        btn_save: "Sauvegarder",
-        recovery_code_label: "Code de récupération :",
-        btn_copy_code: "Copier le Code",
-        import_code_label: "Importer le Code :",
-        import_placeholder: "Collez votre code...",
+        mood_label: "Humeur actuelle :", hide_country: "Masquer le pays (Île Céleste)",
+        btn_submit_echo: "Émettre", submitting: "Diffusion...",
+        stream_global: "Flux Mondial", btn_back_global: "Vue Globale",
+        filter_all: "Tous", filter_voice: "Voix", filter_text: "Texte",
+        sort_latest: "Récents", sort_popular: "Populaires", sort_random: "Errer",
+        loading_stream: "Réglage des fréquences...", empty_stream: "Aucun écho dans cette dimension.",
+        just_now: "À l'instant", mins_ago: "min plus tôt", hours_ago: "h plus tôt", days_ago: "j plus tôt",
+        modal_identity_title: "Identité Anonyme", nickname_label: "Pseudonyme :", btn_save: "Sauvegarder",
+        recovery_code_label: "Code de récupération :", btn_copy_code: "Copier le Code",
+        import_code_label: "Importer le Code :", import_placeholder: "Collez votre code...",
         btn_import: "Restaurer",
-        modal_comment_title: "Réponses",
-        btn_reply: "Répondre",
+        modal_comment_title: "Réponses", btn_reply: "Répondre",
         reply_placeholder: "Laissez une réponse bienveillante...",
-        comments_all: "Toutes les réponses",
-        no_comments: "Pas de réponse",
-        report_title: "Signaler",
-        report_reason_label: "Raison :",
+        comments_all: "Toutes les réponses", no_comments: "Pas de réponse",
+        report_title: "Signaler", report_reason_label: "Raison :",
+        report_reason_abuse: "Harcèlement ou attaque personnelle", report_reason_illegal: "Contenu illicite ou nuisible",
+        report_reason_spam: "Spam ou publicité", report_reason_privacy: "Violation de la vie privée",
+        report_reason_other: "Autre infraction", report_detail_placeholder: "Détails supplémentaires (optionnel)",
         btn_submit_report: "Envoyer",
-        btn_delete: "Supprimer",
-        btn_report: "Signaler",
-        day_status_tag: "Jour",
-        night_status_tag: "Nuit",
-        twilight_status_tag: "Crépuscule",
-        emotion_calm: "Calme",
-        emotion_happy: "Joie",
-        emotion_hopeful: "Espoir",
-        emotion_lonely: "Solitude",
-        emotion_tired: "Fatigue",
-        emotion_love: "Chaleur",
-        emotion_sad: "Tristesse",
-        emotion_anxious: "Anxiété",
-        emotion_angry: "Colère",
+        btn_delete: "Supprimer", btn_report: "Signaler",
+        day_status_tag: "Jour", night_status_tag: "Nuit", twilight_status_tag: "Crépuscule",
+        emotion_calm: "Calme", emotion_happy: "Joie", emotion_hopeful: "Espoir",
+        emotion_lonely: "Solitude", emotion_tired: "Fatigue", emotion_love: "Chaleur",
+        emotion_sad: "Tristesse", emotion_anxious: "Anxiété", emotion_angry: "Colère",
+        step_type: "Type", step_content: "Contenu", step_mood: "Humeur", step_send: "Envoyer",
+        review_type: "Format", review_content: "Aperçu", review_mood: "Humeur", review_location: "Lieu",
+        deep_space_island: "Île Céleste",
+        btn_prev: "Précédent", btn_next: "Suivant",
+        globe_tooltip_status_day: "En journée", globe_tooltip_status_night: "La nuit",
+        globe_tooltip_echoes: "Échos", globe_tooltip_voices: "Voix",
       },
       de: {
-        site_title: "WORLD ECHO",
-        site_subtitle: "World Echo · Stille Einkehr",
-        user_default: "Echo-Reisender",
-        sun_subsolar: "Subsolarer Punkt",
-        filter_all_time: "Globaler Horizont",
-        filter_day_only: "Im Tageslicht",
-        filter_night_only: "In der Nacht",
-        legend_voice: "Sprach-Echo",
-        legend_text: "Geschriebener Brief",
-        legend_sun: "Tag-Nacht-Licht",
-        world_mood_title: "Stimmungswetter",
-        mood_summary: "{count} Stimmen",
-        composer_title: "Echo senden",
-        tab_voice: "Sprache aufnehmen",
-        tab_text: "Text verfassen",
-        mode_voice: "Sprachmodus",
-        mode_text: "Textmodus",
+        site_title: "WORLD ECHO", site_subtitle: "World Echo · Stille Einkehr",
+        user_default: "Echo-Reisender", sun_subsolar: "Subsolarer Punkt",
+        filter_all_time: "Globaler Horizont", filter_day_only: "Im Tageslicht", filter_night_only: "In der Nacht",
+        legend_voice: "Sprach-Echo", legend_text: "Geschriebener Brief", legend_sun: "Tag-Nacht-Licht",
+        world_mood_title: "Stimmungswetter", mood_summary: "{count} Stimmen",
+        sidebar_desc: "Jedes Echo verschmilzt mit der Tag-Nacht-Grenze in Echtzeit.",
+        scroll_explore: "Echos erkunden",
+        composer_title: "Echo senden", tab_voice: "Sprache aufnehmen", tab_text: "Text verfassen",
+        mode_voice: "Sprachmodus", mode_text: "Textmodus",
+        step_1_hint: "Wähle deine Ausdrucksform:", text_limit_hint: "Bis zu 1000 Zeichen",
         rec_limit: "Bis zu 60s Aufnahme",
-        btn_start_rec: "Aufnahme starten",
-        btn_stop_rec: "Beenden",
-        btn_rerecord: "Erneut aufnehmen",
+        btn_start_rec: "Aufnahme starten", btn_stop_rec: "Beenden", btn_rerecord: "Erneut aufnehmen",
         voice_caption_placeholder: "Optionale Zeile beifügen...",
         text_placeholder: "Wo auf der Welt bist du und was fühlst du gerade?",
-        mood_label: "Aktuelle Stimmung:",
-        hide_country: "Land verbergen (Weltraum-Insel)",
-        btn_submit_echo: "Echo senden",
-        submitting: "Wird übertragen...",
-        stream_global: "Globaler Feed",
-        btn_back_global: "Zurück",
-        filter_all: "Alle",
-        filter_voice: "Sprache",
-        filter_text: "Text",
-        sort_latest: "Neueste",
-        sort_popular: "Beliebt",
-        sort_random: "Streifen",
-        loading_stream: "Frequenzen abstimmen...",
-        empty_stream: "Keine Echos in dieser Dimension.",
-        just_now: "Gerade eben",
-        mins_ago: "Min. her",
-        hours_ago: "Std. her",
-        days_ago: "Tage her",
-        modal_identity_title: "Anonyme Identität",
-        nickname_label: "Anonymer Name:",
-        btn_save: "Speichern",
-        recovery_code_label: "Wiederherstellungscode:",
-        btn_copy_code: "Code kopieren",
-        import_code_label: "Code importieren:",
-        import_placeholder: "Code einfügen...",
+        mood_label: "Aktuelle Stimmung:", hide_country: "Land verbergen (Weltraum-Insel)",
+        btn_submit_echo: "Echo senden", submitting: "Wird übertragen...",
+        stream_global: "Globaler Feed", btn_back_global: "Zurück",
+        filter_all: "Alle", filter_voice: "Sprache", filter_text: "Text",
+        sort_latest: "Neueste", sort_popular: "Beliebt", sort_random: "Streifen",
+        loading_stream: "Frequenzen abstimmen...", empty_stream: "Keine Echos in dieser Dimension.",
+        just_now: "Gerade eben", mins_ago: "Min. her", hours_ago: "Std. her", days_ago: "Tage her",
+        modal_identity_title: "Anonyme Identität", nickname_label: "Anonymer Name:", btn_save: "Speichern",
+        recovery_code_label: "Wiederherstellungscode:", btn_copy_code: "Code kopieren",
+        import_code_label: "Code importieren:", import_placeholder: "Code einfügen...",
         btn_import: "Wiederherstellen",
-        modal_comment_title: "Antworten",
-        btn_reply: "Antworten",
+        modal_comment_title: "Antworten", btn_reply: "Antworten",
         reply_placeholder: "Hinterlasse eine stille Antwort...",
-        comments_all: "Alle Antworten",
-        no_comments: "Keine Antworten",
-        report_title: "Melden",
-        report_reason_label: "Grund:",
+        comments_all: "Alle Antworten", no_comments: "Keine Antworten",
+        report_title: "Melden", report_reason_label: "Grund:",
+        report_reason_abuse: "Belästigung oder persönlicher Angriff", report_reason_illegal: "Illegale oder schädliche Inhalte",
+        report_reason_spam: "Spam oder Werbung", report_reason_privacy: "Datenschutzverletzung",
+        report_reason_other: "Sonstiger Verstoß", report_detail_placeholder: "Zusätzliche Details (optional)",
         btn_submit_report: "Absenden",
-        btn_delete: "Löschen",
-        btn_report: "Melden",
-        day_status_tag: "Tag",
-        night_status_tag: "Nacht",
-        twilight_status_tag: "Dämmerung",
-        emotion_calm: "Ruhe",
-        emotion_happy: "Freude",
-        emotion_hopeful: "Hoffnung",
-        emotion_lonely: "Einsamkeit",
-        emotion_tired: "Müdigkeit",
-        emotion_love: "Wärme",
-        emotion_sad: "Trauer",
-        emotion_anxious: "Unruhe",
-        emotion_angry: "Wut",
+        btn_delete: "Löschen", btn_report: "Melden",
+        day_status_tag: "Tag", night_status_tag: "Nacht", twilight_status_tag: "Dämmerung",
+        emotion_calm: "Ruhe", emotion_happy: "Freude", emotion_hopeful: "Hoffnung",
+        emotion_lonely: "Einsamkeit", emotion_tired: "Müdigkeit", emotion_love: "Wärme",
+        emotion_sad: "Trauer", emotion_anxious: "Unruhe", emotion_angry: "Wut",
+        step_type: "Typ", step_content: "Inhalt", step_mood: "Stimmung", step_send: "Senden",
+        review_type: "Format", review_content: "Vorschau", review_mood: "Gefühl", review_location: "Ort",
+        deep_space_island: "Weltraum-Insel",
+        btn_prev: "Zurück", btn_next: "Weiter",
+        globe_tooltip_status_day: "Bei Tageslicht", globe_tooltip_status_night: "Bei Nacht",
+        globe_tooltip_echoes: "Echos", globe_tooltip_voices: "Stimmen",
       },
       ru: {
-        site_title: "WORLD ECHO",
-        site_subtitle: "World Echo · Тихая гавань",
-        user_default: "Странник Эха",
-        sun_subsolar: "Зенит Солнца",
-        filter_all_time: "Глобальный горизонт",
-        filter_day_only: "При свете",
-        filter_night_only: "В ночи",
-        legend_voice: "Голосовое эхо",
-        legend_text: "Письмо",
-        legend_sun: "Свет и тень",
-        world_mood_title: "Погода настроения",
-        mood_summary: "{count} голосов",
-        composer_title: "Отправить эхо",
-        tab_voice: "Запись голоса",
-        tab_text: "Написать текст",
-        mode_voice: "Режим голоса",
-        mode_text: "Режим текста",
+        site_title: "WORLD ECHO", site_subtitle: "World Echo · Тихая гавань",
+        user_default: "Странник Эха", sun_subsolar: "Зенит Солнца",
+        filter_all_time: "Глобальный горизонт", filter_day_only: "При свете", filter_night_only: "В ночи",
+        legend_voice: "Голосовое эхо", legend_text: "Письмо", legend_sun: "Свет и тень",
+        world_mood_title: "Погода настроения", mood_summary: "{count} голосов",
+        sidebar_desc: "Каждое эхо звучит сквозь линию рассвета и заката в реальном времени.",
+        scroll_explore: "Исследовать эхо",
+        composer_title: "Отправить эхо", tab_voice: "Запись голоса", tab_text: "Написать текст",
+        mode_voice: "Режим голоса", mode_text: "Режим текста",
+        step_1_hint: "Выберите способ самовыражения:", text_limit_hint: "До 1000 символов",
         rec_limit: "Запись до 60 секунд",
-        btn_start_rec: "Начать запись",
-        btn_stop_rec: "Завершить",
-        btn_rerecord: "Перезаписать",
+        btn_start_rec: "Начать запись", btn_stop_rec: "Завершить", btn_rerecord: "Перезаписать",
         voice_caption_placeholder: "Короткая мысль (по желанию)...",
         text_placeholder: "Где вы сейчас на Земле и что чувствуете?",
-        mood_label: "Ваше состояние:",
-        hide_country: "Скрыть страну (Остров в космосе)",
-        btn_submit_echo: "Отправить эхо",
-        submitting: "Передача...",
-        stream_global: "Глобальная лента",
-        btn_back_global: "Назад",
-        filter_all: "Все",
-        filter_voice: "Голос",
-        filter_text: "Текст",
-        sort_latest: "Новые",
-        sort_popular: "Популярные",
-        sort_random: "Блуждать",
-        loading_stream: "Настройка волн...",
-        empty_stream: "В этом измерении еще нет эха.",
-        just_now: "Только что",
-        mins_ago: "мин. назад",
-        hours_ago: "ч. назад",
-        days_ago: "дн. назад",
-        modal_identity_title: "Анонимный ключ",
-        nickname_label: "Позывной:",
-        btn_save: "Сохранить",
-        recovery_code_label: "Код восстановления:",
-        btn_copy_code: "Скопировать",
-        import_code_label: "Импортировать:",
-        import_placeholder: "Вставьте код...",
+        mood_label: "Ваше состояние:", hide_country: "Скрыть страну (Остров в космосе)",
+        btn_submit_echo: "Отправить эхо", submitting: "Передача...",
+        stream_global: "Глобальная лента", btn_back_global: "Назад",
+        filter_all: "Все", filter_voice: "Голос", filter_text: "Текст",
+        sort_latest: "Новые", sort_popular: "Популярные", sort_random: "Блуждать",
+        loading_stream: "Настройка волн...", empty_stream: "В этом измерении еще нет эха.",
+        just_now: "Только что", mins_ago: "мин. назад", hours_ago: "ч. назад", days_ago: "дн. назад",
+        modal_identity_title: "Анонимный ключ", nickname_label: "Позывной:", btn_save: "Сохранить",
+        recovery_code_label: "Код восстановления:", btn_copy_code: "Скопировать",
+        import_code_label: "Импортировать:", import_placeholder: "Вставьте код...",
         btn_import: "Восстановить",
-        modal_comment_title: "Отклики",
-        btn_reply: "Ответить",
+        modal_comment_title: "Отклики", btn_reply: "Ответить",
         reply_placeholder: "Напишите добрый отклик...",
-        comments_all: "Все отклики",
-        no_comments: "Ответов пока нет",
-        report_title: "Пожаловаться",
-        report_reason_label: "Причина:",
+        comments_all: "Все отклики", no_comments: "Ответов пока нет",
+        report_title: "Пожаловаться", report_reason_label: "Причина:",
+        report_reason_abuse: "Оскорбления или травля", report_reason_illegal: "Незаконный или вредный контент",
+        report_reason_spam: "Спам или реклама", report_reason_privacy: "Нарушение конфиденциальности",
+        report_reason_other: "Другое нарушение", report_detail_placeholder: "Дополнительно (необязательно)",
         btn_submit_report: "Отправить",
-        btn_delete: "Удалить",
-        btn_report: "Пожаловаться",
-        day_status_tag: "День",
-        night_status_tag: "Ночь",
-        twilight_status_tag: "Сумерки",
-        emotion_calm: "Спокойствие",
-        emotion_happy: "Радость",
-        emotion_hopeful: "Надежда",
-        emotion_lonely: "Одиночество",
-        emotion_tired: "Усталость",
-        emotion_love: "Теплота",
-        emotion_sad: "Грусть",
-        emotion_anxious: "Тревога",
-        emotion_angry: "Гнев",
+        btn_delete: "Удалить", btn_report: "Пожаловаться",
+        day_status_tag: "День", night_status_tag: "Ночь", twilight_status_tag: "Сумерки",
+        emotion_calm: "Спокойствие", emotion_happy: "Радость", emotion_hopeful: "Надежда",
+        emotion_lonely: "Одиночество", emotion_tired: "Усталость", emotion_love: "Теплота",
+        emotion_sad: "Грусть", emotion_anxious: "Тревога", emotion_angry: "Гнев",
+        step_type: "Тип", step_content: "Содержание", step_mood: "Настроение", step_send: "Отправить",
+        review_type: "Формат", review_content: "Превью", review_mood: "Состояние", review_location: "Место",
+        deep_space_island: "Остров в космосе",
+        btn_prev: "Назад", btn_next: "Далее",
+        globe_tooltip_status_day: "При свете дня", globe_tooltip_status_night: "Ночью",
+        globe_tooltip_echoes: "Эхо", globe_tooltip_voices: "Голоса",
       },
       ar: {
-        site_title: "WORLD ECHO",
-        site_subtitle: "صدى العالم · ملاذ السكينة",
-        user_default: "مسافر الصدى",
-        sun_subsolar: "تعامد الشمس",
-        filter_all_time: "الأفق العالمي",
-        filter_day_only: "تحت الضوء",
-        filter_night_only: "في الليل",
-        legend_voice: "صدى صوتي",
-        legend_text: "رسالة نصية",
-        legend_sun: "النور والظل",
-        world_mood_title: "طقس المشاعر",
-        mood_summary: "{count} نبضة صوتية",
-        composer_title: "إرسال الصدى",
-        tab_voice: "تسجيل صوتي",
-        tab_text: "كتابة نص",
-        mode_voice: "وضع الصوت",
-        mode_text: "وضع النص",
+        site_title: "WORLD ECHO", site_subtitle: "صدى العالم · ملاذ السكينة",
+        user_default: "مسافر الصدى", sun_subsolar: "تعامد الشمس",
+        filter_all_time: "الأفق العالمي", filter_day_only: "تحت الضوء", filter_night_only: "في الليل",
+        legend_voice: "صدى صوتي", legend_text: "رسالة نصية", legend_sun: "النور والظل",
+        world_mood_title: "طقس المشاعر", mood_summary: "{count} نبضة صوتية",
+        sidebar_desc: "يمتزج كل صدى مع خط الشفق والنهار في الزمن الحقيقي.",
+        scroll_explore: "استكشاف الأصداء",
+        composer_title: "إرسال الصدى", tab_voice: "تسجيل صوتي", tab_text: "كتابة نص",
+        mode_voice: "وضع الصوت", mode_text: "وضع النص",
+        step_1_hint: "اختر وسيلة التعبير:", text_limit_hint: "حتى 1000 حرف",
         rec_limit: "تسجيل حتى 60 ثانية",
-        btn_start_rec: "بدء التسجيل",
-        btn_stop_rec: "إنهاء",
-        btn_rerecord: "إعادة التسجيل",
+        btn_start_rec: "بدء التسجيل", btn_stop_rec: "إنهاء", btn_rerecord: "إعادة التسجيل",
         voice_caption_placeholder: "عبارة قصيرة (اختياري)...",
         text_placeholder: "في أي ركن من العالم أنت الآن، وماذا تشعر؟",
-        mood_label: "مشاعرك الحالية:",
-        hide_country: "إخفاء بلدي (جزيرة فضائية)",
-        btn_submit_echo: "إرسال",
-        submitting: "جارٍ الإرسال...",
-        stream_global: "الصدى العالمي",
-        btn_back_global: "العودة",
-        filter_all: "الكل",
-        filter_voice: "صوت",
-        filter_text: "نص",
-        sort_latest: "الأحدث",
-        sort_popular: "الشائع",
-        sort_random: "استكشاف",
-        loading_stream: "جارٍ ضبط الترددات...",
-        empty_stream: "لم يتم رصد أي صدى بعد.",
-        just_now: "الآن",
-        mins_ago: "دقيقة مضت",
-        hours_ago: "ساعة مضت",
-        days_ago: "أيام مضت",
-        modal_identity_title: "الهوية ورمز الاستعادة",
-        nickname_label: "اسمك المجهول:",
-        btn_save: "حفظ",
-        recovery_code_label: "رمز الاستعادة:",
-        btn_copy_code: "نسخ الرمز",
-        import_code_label: "استيراد الرمز:",
-        import_placeholder: "الصق الرمز هنا...",
+        mood_label: "مشاعرك الحالية:", hide_country: "إخفاء بلدي (جزيرة فضائية)",
+        btn_submit_echo: "إرسال", submitting: "جارٍ الإرسال...",
+        stream_global: "الصدى العالمي", btn_back_global: "العودة",
+        filter_all: "الكل", filter_voice: "صوت", filter_text: "نص",
+        sort_latest: "الأحدث", sort_popular: "الشائع", sort_random: "استكشاف",
+        loading_stream: "جارٍ ضبط الترددات...", empty_stream: "لم يتم رصد أي صدى بعد.",
+        just_now: "الآن", mins_ago: "دقيقة مضت", hours_ago: "ساعة مضت", days_ago: "أيام مضت",
+        modal_identity_title: "الهوية ورمز الاستعادة", nickname_label: "اسمك المجهول:", btn_save: "حفظ",
+        recovery_code_label: "رمز الاستعادة:", btn_copy_code: "نسخ الرمز",
+        import_code_label: "استيراد الرمز:", import_placeholder: "الصق الرمز هنا...",
         btn_import: "استعادة الهوية",
-        modal_comment_title: "الردود",
-        btn_reply: "إرسال الرد",
+        modal_comment_title: "الردود", btn_reply: "إرسال الرد",
         reply_placeholder: "اترك رداً هادئاً ودافئاً...",
-        comments_all: "جميع الردود",
-        no_comments: "لا توجد ردود بعد",
-        report_title: "إبلاغ عن محتوى",
-        report_reason_label: "سبب البلاغ:",
+        comments_all: "جميع الردود", no_comments: "لا توجد ردود بعد",
+        report_title: "إبلاغ عن محتوى", report_reason_label: "سبب البلاغ:",
+        report_reason_abuse: "إساءة أو هجوم شخصي", report_reason_illegal: "محتوى غير قانوني أو ضار",
+        report_reason_spam: "بريد مزعج أو إعلانات", report_reason_privacy: "انتهاك الخصوصية",
+        report_reason_other: "مخالفة أخرى", report_detail_placeholder: "تفاصيل إضافية (اختياري)",
         btn_submit_report: "إرسال",
-        btn_delete: "حذف",
-        btn_report: "إبلاغ",
-        day_status_tag: "نهار",
-        night_status_tag: "ليل",
-        twilight_status_tag: "شفق",
-        emotion_calm: "هدوء",
-        emotion_happy: "بهجة",
-        emotion_hopeful: "أمل",
-        emotion_lonely: "وحدة",
-        emotion_tired: "تعب",
-        emotion_love: "دفء",
-        emotion_sad: "حزن",
-        emotion_anxious: "قلق",
-        emotion_angry: "غضب",
+        btn_delete: "حذف", btn_report: "إبلاغ",
+        day_status_tag: "نهار", night_status_tag: "ليل", twilight_status_tag: "شفق",
+        emotion_calm: "هدوء", emotion_happy: "بهجة", emotion_hopeful: "أمل",
+        emotion_lonely: "وحدة", emotion_tired: "تعب", emotion_love: "دفء",
+        emotion_sad: "حزن", emotion_anxious: "قلق", emotion_angry: "غضب",
+        step_type: "النوع", step_content: "المحتوى", step_mood: "المشاعر", step_send: "إرسال",
+        review_type: "النمط", review_content: "المعاينة", review_mood: "المشاعر", review_location: "الموقع",
+        deep_space_island: "جزيرة فضائية",
+        btn_prev: "السابق", btn_next: "التالي",
+        globe_tooltip_status_day: "في وضح النهار", globe_tooltip_status_night: "في الليل",
+        globe_tooltip_echoes: "أصداء", globe_tooltip_voices: "أصوات",
       }
     };
 
@@ -2126,12 +2205,16 @@
       filterSort: "latest",
       filterDayNight: "all",
       composerType: "voice",
+      composerStep: 1,
       selectedEmotion: "calm",
       recordingBlob: null,
       recordingDuration: 0,
       isRecording: false,
       mediaRecorder: null,
       recordTimerInterval: null,
+      audioContext: null,
+      analyserNode: null,
+      animFrameId: null,
       globe: null,
       globeMaterial: null,
       currentPlayingAudio: null,
@@ -2154,7 +2237,41 @@
       return text;
     }
 
-    // 切换并应用语言
+    // 8. Unique avatar gradient by nickname hash (charCode sum → hue rotation)
+    function generateAvatarGradient(name) {
+      let sum = 0;
+      const str = name || "E";
+      for (let i = 0; i < str.length; i++) {
+        sum += str.charCodeAt(i) * (i + 1);
+      }
+      const h1 = sum % 360;
+      const h2 = (h1 + 40) % 360;
+      return `linear-gradient(135deg, hsl(${h1}, 45%, 38%), hsl(${h2}, 40%, 26%))`;
+    }
+
+    function escapeHTML(str) {
+      if (!str) return "";
+      return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+    }
+
+    function formatTimeAgo(dateStr) {
+      if (!dateStr) return t("just_now");
+      const past = new Date(dateStr.endsWith("Z") ? dateStr : dateStr + "Z").getTime();
+      const diffSecs = Math.max(0, Math.floor((Date.now() - past) / 1000));
+      if (diffSecs < 60) return t("just_now");
+      if (diffSecs < 3600) return `${Math.floor(diffSecs / 60)} ${t("mins_ago")}`;
+      if (diffSecs < 86400) return `${Math.floor(diffSecs / 3600)} ${t("hours_ago")}`;
+      return `${Math.floor(diffSecs / 86400)} ${t("days_ago")}`;
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById("toast-el");
+      toast.textContent = msg;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2400);
+    }
+
+    // ================= 语言切换 =================
     function setLanguage(lang) {
       if (!I18N[lang]) lang = "zh";
       state.currentLang = lang;
@@ -2162,20 +2279,17 @@
       document.getElementById("lang-select").value = lang;
       document.documentElement.lang = lang === "zh" ? "zh-CN" : lang;
 
-      // 更新带有 data-i18n 属性的所有文本节点
       document.querySelectorAll("[data-i18n]").forEach(el => {
-        const key = el.dataset.i18n;
-        el.textContent = t(key);
+        el.textContent = t(el.dataset.i18n);
       });
-
-      // 更新带有 data-i18n-ph 属性的所有 placeholder
       document.querySelectorAll("[data-i18n-ph]").forEach(el => {
-        const key = el.dataset.i18nPh;
-        el.placeholder = t(key);
+        el.placeholder = t(el.dataset.i18nPh);
       });
 
-      document.getElementById("composer-mode-badge").textContent = 
-        state.composerType === "voice" ? t("mode_voice") : t("mode_text");
+      // 14. Translate report modal options
+      document.querySelectorAll("#report-reason-select option[data-i18n]").forEach(opt => {
+        opt.textContent = t(opt.dataset.i18n);
+      });
 
       renderEmotionSelector();
       renderMoodWeather(state.cachedMoods);
@@ -2202,25 +2316,25 @@
 
       document.getElementById("lang-select").addEventListener("change", (e) => {
         setLanguage(e.target.value);
-        showToast(`Language switched`);
+        showToast("Language updated");
       });
     }
 
-    // 动态渲染情绪选择器矩阵（静谧调色）
+    // ================= 情绪选择器矩阵 =================
     function renderEmotionSelector() {
       const container = document.getElementById("emotion-selector");
       container.innerHTML = "";
       EMOTION_KEYS.forEach(key => {
         const item = EMOTION_MAP[key];
         const el = document.createElement("div");
-        el.className = `emotion-select-item ${state.selectedEmotion === key ? "selected" : ""}`;
+        el.className = `emotion-pick-item ${state.selectedEmotion === key ? "selected" : ""}`;
         el.dataset.emotion = key;
         el.innerHTML = `
-          <span class="mood-dot" style="background: ${item.color};"></span>
+          <span class="mood-chip-dot" style="background: ${item.color};"></span>
           <span>${t("emotion_" + key)}</span>
         `;
         el.addEventListener("click", () => {
-          document.querySelectorAll(".emotion-select-item").forEach(i => i.classList.remove("selected"));
+          document.querySelectorAll(".emotion-pick-item").forEach(i => i.classList.remove("selected"));
           el.classList.add("selected");
           state.selectedEmotion = key;
         });
@@ -2228,15 +2342,7 @@
       });
     }
 
-    // Toast 提示
-    function showToast(msg) {
-      const toast = document.getElementById("toast-el");
-      toast.textContent = msg;
-      toast.classList.add("show");
-      setTimeout(() => toast.classList.remove("show"), 2400);
-    }
-
-    // ================= 实时天文太阳直射点演算 =================
+    // ================= 实时天文太阳直射点演算 (Preserved math) =================
     function calculateSubsolarPoint(date = new Date()) {
       const year = date.getUTCFullYear();
       const month = date.getUTCMonth();
@@ -2301,7 +2407,7 @@
     function refreshDiurnalStatus() {
       const sun = calculateSubsolarPoint(new Date());
       state.sunPosition = sun;
-      
+
       let dayCount = 0;
       let nightCount = 0;
 
@@ -2310,11 +2416,7 @@
         const coord = COUNTRY_COORDINATES[cCode];
         const res = calculateCountrySolar(coord.lat, coord.lng, sun);
         state.countryDayNightMap[cCode] = res;
-        if (res.isDay) {
-          dayCount++;
-        } else {
-          nightCount++;
-        }
+        if (res.isDay) dayCount++; else nightCount++;
       });
 
       document.getElementById("day-country-count").textContent = dayCount;
@@ -2330,7 +2432,7 @@
       document.getElementById("solar-subsolar-display").textContent = `${latStr}, ${lngStr}`;
     }
 
-    // ================= 1. 匿名身份管理 =================
+    // ================= 匿名身份管理 =================
     function initIdentity() {
       let uid = localStorage.getItem("we_user_id");
       let token = localStorage.getItem("we_token");
@@ -2341,7 +2443,7 @@
         token = Array.from(crypto.getRandomValues(new Uint8Array(16)))
           .map(b => b.toString(16).padStart(2, "0")).join("");
         nick = t("user_default") + " #" + Math.floor(1000 + Math.random() * 9000);
-        
+
         localStorage.setItem("we_user_id", uid);
         localStorage.setItem("we_token", token);
         localStorage.setItem("we_nickname", nick);
@@ -2380,7 +2482,7 @@
       }
     }
 
-    // ================= 2. 3D 地球初始化与静谧着色器 =================
+    // ================= 3D 地球初始化与静谧着色器 (Exact required shader) =================
     function initGlobe() {
       const container = document.getElementById("globe-container");
 
@@ -2388,7 +2490,6 @@
       const dayTexture = textureLoader.load("https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg");
       const nightTexture = textureLoader.load("https://unpkg.com/three-globe/example/img/earth-night.jpg");
 
-      // 绝美静谧昼夜 Shader：压暗对比度，呈现深夜深邃幽蓝与柔和微光
       const globeMaterial = new THREE.ShaderMaterial({
         uniforms: {
           dayTexture: { value: dayTexture },
@@ -2396,50 +2497,8 @@
           uSunLat: { value: 0.0 },
           uSunLng: { value: 0.0 },
         },
-        vertexShader: `
-          varying vec2 vUv;
-          void main() {
-            vUv = uv;
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-          }
-        `,
-        fragmentShader: `
-          uniform sampler2D dayTexture;
-          uniform sampler2D nightTexture;
-          uniform float uSunLat;
-          uniform float uSunLng;
-          varying vec2 vUv;
-
-          const float PI = 3.14159265359;
-
-          void main() {
-            float lng = (vUv.x - 0.5) * 2.0 * PI;
-            float lat = (vUv.y - 0.5) * PI;
-
-            // 球面绝对经纬度余弦点积运算
-            float dotProd = sin(lat) * sin(uSunLat) + cos(lat) * cos(uSunLat) * cos(lng - uSunLng);
-
-            // 柔和晨昏线过渡
-            float t = smoothstep(-0.16, 0.16, dotProd);
-
-            vec4 dayRaw = texture2D(dayTexture, vUv);
-            vec4 nightRaw = texture2D(nightTexture, vUv);
-
-            // 静谧治愈调色：将白天贴图稍微压暗降对比度，呈现柔和幽深的夜空深邃质感
-            vec3 calmDay = dayRaw.rgb * vec3(0.72, 0.78, 0.86);
-
-            // 柔和温暖的夜晚城市微光（不刺眼）
-            vec3 calmNight = nightRaw.rgb * vec3(1.1, 1.05, 0.95);
-
-            vec3 mixedColor = mix(calmNight, calmDay, t);
-
-            // 晨昏交界处柔和的晚霞暮色（低饱和暖琥珀）
-            float twilight = (1.0 - smoothstep(0.0, 0.16, abs(dotProd))) * 0.22;
-            vec3 sunsetGlow = vec3(0.82, 0.55, 0.38) * twilight;
-
-            gl_FragColor = vec4(mixedColor + sunsetGlow, 1.0);
-          }
-        `
+        vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+        fragmentShader: `uniform sampler2D dayTexture; uniform sampler2D nightTexture; uniform float uSunLat; uniform float uSunLng; varying vec2 vUv; const float PI = 3.14159265359; void main() { float lng = (vUv.x - 0.5) * 2.0 * PI; float lat = (vUv.y - 0.5) * PI; float dotProd = sin(lat) * sin(uSunLat) + cos(lat) * cos(uSunLat) * cos(lng - uSunLng); float t = smoothstep(-0.16, 0.16, dotProd); vec4 dayRaw = texture2D(dayTexture, vUv); vec4 nightRaw = texture2D(nightTexture, vUv); vec3 calmDay = dayRaw.rgb * vec3(0.72, 0.78, 0.86); vec3 calmNight = nightRaw.rgb * vec3(1.1, 1.05, 0.95); vec3 mixedColor = mix(calmNight, calmDay, t); float twilight = (1.0 - smoothstep(0.0, 0.16, abs(dotProd))) * 0.22; vec3 sunsetGlow = vec3(0.82, 0.55, 0.38) * twilight; gl_FragColor = vec4(mixedColor + sunsetGlow, 1.0); }`
       });
 
       state.globeMaterial = globeMaterial;
@@ -2452,15 +2511,15 @@
         .atmosphereAltitude(0.14)
         .pointOfView({ lat: 20, lng: 110, altitude: 2.2 });
 
-      // 自转配置
+      // Slow gentle auto-rotation
       globe.controls().autoRotate = true;
-      globe.controls().autoRotateSpeed = 0.45;
+      globe.controls().autoRotateSpeed = 0.35;
 
       let isSpinning = true;
       document.getElementById("btn-toggle-spin").addEventListener("click", () => {
         isSpinning = !isSpinning;
         globe.controls().autoRotate = isSpinning;
-        showToast(isSpinning ? "已开启地球自转" : "已暂停自转");
+        showToast(isSpinning ? "自转已开启" : "自转已暂停");
       });
 
       document.getElementById("btn-focus-sun").addEventListener("click", () => {
@@ -2486,16 +2545,14 @@
 
     function updateSunDirectionShader() {
       if (!state.globe || !state.globeMaterial) return;
-      const sun = state.sunPosition;
       const deg2rad = Math.PI / 180.0;
-      state.globeMaterial.uniforms.uSunLat.value = sun.lat * deg2rad;
-      state.globeMaterial.uniforms.uSunLng.value = sun.lng * deg2rad;
+      state.globeMaterial.uniforms.uSunLat.value = state.sunPosition.lat * deg2rad;
+      state.globeMaterial.uniforms.uSunLng.value = state.sunPosition.lng * deg2rad;
     }
 
-    // 渲染 3D 柱状光柱（柔和雅致、清晰可见）
+    // 13. Globe Tooltip with Full i18n
     function updateGlobePoints(countryStats) {
       if (!state.globe) return;
-
       const pointsData = [];
       countryStats.forEach(item => {
         const cCode = item.country_code;
@@ -2503,9 +2560,6 @@
         const total = item.total || 0;
         const voices = item.voices || 0;
         const diurnal = state.countryDayNightMap[cCode] || { isDay: true, status: "day", alt: "0", localTimeStr: "--:--" };
-        
-        const altitude = Math.min(0.08 + total * 0.04, 0.65);
-        let color = voices > 0 ? "#7DD3FC" : "#94A3B8";
 
         pointsData.push({
           code: cCode,
@@ -2514,8 +2568,8 @@
           lng: coord.lng,
           total: total,
           voices: voices,
-          altitude: altitude,
-          color: color,
+          altitude: Math.min(0.08 + total * 0.04, 0.65),
+          color: voices > 0 ? "#7DD3FC" : "#94A3B8",
           diurnal: diurnal,
         });
       });
@@ -2527,10 +2581,10 @@
         .pointRadius(1.3)
         .pointResolution(16)
         .pointLabel(d => `
-          <div style="background: rgba(15,23,42,0.92); border: 1px solid rgba(255,255,255,0.12); backdrop-filter: blur(12px); padding: 8px 12px; border-radius: 8px; font-size: 12px; color: #F8FAFC; box-shadow: 0 8px 24px rgba(0,0,0,0.4);">
-            <strong style="color: #F8FAFC;">${d.name} (${d.code})</strong><br/>
-            <span style="color: #94A3B8;">${d.diurnal.isDay ? '日照之下' : '夜幕之下'} · ${d.diurnal.localTimeStr}</span><br/>
-            <span style="color: #7DD3FC;">回声: ${d.total} (声音: ${d.voices})</span>
+          <div style="background: rgba(15,23,42,0.94); border: 1px solid rgba(255,255,255,0.12); backdrop-filter: blur(16px); padding: 9px 13px; border-radius: 10px; font-size: 12px; color: #F8FAFC; box-shadow: 0 8px 24px rgba(0,0,0,0.5);">
+            <strong style="color: #F8FAFC; font-size: 13px;">${d.name} (${d.code})</strong><br/>
+            <span style="color: #94A3B8;">${d.diurnal.isDay ? t('globe_tooltip_status_day') : t('globe_tooltip_status_night')} · ${d.diurnal.localTimeStr}</span><br/>
+            <span style="color: #7DD3FC;">${t('globe_tooltip_echoes')}: ${d.total} (${t('globe_tooltip_voices')}: ${d.voices})</span>
           </div>
         `)
         .onPointClick(d => {
@@ -2538,7 +2592,7 @@
           state.filterCountry = d.code;
           updateActiveCountryUI();
           renderPosts(state.cachedPosts);
-          showToast(`已漫游至 ${d.name}`);
+          showToast(`→ ${d.name}`);
         });
     }
 
@@ -2551,18 +2605,44 @@
       } else {
         const info = COUNTRY_COORDINATES[state.filterCountry] || { name: state.filterCountry };
         const diurnal = state.countryDayNightMap[state.filterCountry];
-        const statusText = diurnal ? (diurnal.isDay ? "昼" : "夜") : "";
+        const statusText = diurnal ? (diurnal.isDay ? t("day_status_tag") : t("night_status_tag")) : "";
         label.textContent = `${info.name} · ${statusText}`;
         btnClear.style.display = "inline-block";
       }
     }
 
-    // ================= 3. 麦克风录音控制 =================
+    // ================= 9. 录音机控制与实时波形动画 (AnalyserNode) =================
     const btnRecordToggle = document.getElementById("btn-record-toggle");
     const recordBtnText = document.getElementById("record-btn-text");
     const recordTimer = document.getElementById("record-timer");
     const btnRerecord = document.getElementById("btn-rerecord");
     const localAudioPreview = document.getElementById("local-audio-preview");
+    const recWaveform = document.getElementById("rec-waveform");
+
+    // Populate 32 waveform visualizer bars
+    const BAR_COUNT = 32;
+    for (let i = 0; i < BAR_COUNT; i++) {
+      const bar = document.createElement("div");
+      bar.className = "realtime-bar";
+      bar.style.height = "4px";
+      recWaveform.appendChild(bar);
+    }
+
+    function drawRecordingWaveform() {
+      if (!state.analyserNode || !state.isRecording) return;
+      const dataArray = new Uint8Array(state.analyserNode.frequencyBinCount);
+      state.analyserNode.getByteFrequencyData(dataArray);
+
+      const bars = recWaveform.children;
+      const step = Math.floor(dataArray.length / BAR_COUNT);
+
+      for (let i = 0; i < BAR_COUNT; i++) {
+        const val = dataArray[i * step] || 0;
+        const h = Math.max(4, (val / 255) * 38);
+        bars[i].style.height = `${h}px`;
+      }
+      state.animFrameId = requestAnimationFrame(drawRecordingWaveform);
+    }
 
     async function startRecording() {
       try {
@@ -2575,6 +2655,19 @@
         const mediaRecorder = new MediaRecorder(stream, options);
         let audioChunks = [];
 
+        // Setup Web Audio API AnalyserNode for real-time visualization
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === "suspended") {
+          await audioCtx.resume();
+        }
+        const source = audioCtx.createMediaStreamSource(stream);
+        const analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 256;
+        source.connect(analyser);
+
+        state.audioContext = audioCtx;
+        state.analyserNode = analyser;
+
         mediaRecorder.ondataavailable = (e) => {
           if (e.data.size > 0) audioChunks.push(e.data);
         };
@@ -2582,11 +2675,17 @@
         mediaRecorder.onstop = () => {
           const blob = new Blob(audioChunks, { type: mediaRecorder.mimeType || "audio/webm" });
           state.recordingBlob = blob;
-          const audioUrl = URL.createObjectURL(blob);
-          localAudioPreview.src = audioUrl;
+          localAudioPreview.src = URL.createObjectURL(blob);
           localAudioPreview.style.display = "block";
           btnRerecord.style.display = "flex";
           stream.getTracks().forEach(track => track.stop());
+
+          recWaveform.style.display = "none";
+          cancelAnimationFrame(state.animFrameId);
+          if (state.audioContext) {
+            state.audioContext.close();
+            state.audioContext = null;
+          }
         };
 
         mediaRecorder.start();
@@ -2595,6 +2694,9 @@
         state.recordingDuration = 0;
         btnRecordToggle.classList.add("recording");
         recordBtnText.textContent = t("btn_stop_rec");
+
+        recWaveform.style.display = "flex";
+        drawRecordingWaveform();
 
         clearInterval(state.recordTimerInterval);
         state.recordTimerInterval = setInterval(() => {
@@ -2610,7 +2712,7 @@
         }, 1000);
 
       } catch (err) {
-        showToast("无法访问麦克风，请检查权限");
+        showToast("无法访问麦克风，请检查浏览器权限");
       }
     }
 
@@ -2621,15 +2723,12 @@
         clearInterval(state.recordTimerInterval);
         btnRecordToggle.classList.remove("recording");
         recordBtnText.textContent = t("btn_rerecord");
+        cancelAnimationFrame(state.animFrameId);
       }
     }
 
     btnRecordToggle.addEventListener("click", () => {
-      if (!state.isRecording) {
-        startRecording();
-      } else {
-        stopRecording();
-      }
+      state.isRecording ? stopRecording() : startRecording();
     });
 
     btnRerecord.addEventListener("click", () => {
@@ -2644,29 +2743,56 @@
       startRecording();
     });
 
-    // ================= 4. 回声发射表单控制 =================
-    const tabVoice = document.getElementById("tab-voice");
-    const tabText = document.getElementById("tab-text");
-    const voiceArea = document.getElementById("voice-composer-area");
-    const textArea = document.getElementById("text-composer-area");
-    const composerBadge = document.getElementById("composer-mode-badge");
+    // ================= 3. MULTI-STEP COMPOSER CONTROLS =================
+    const composerOverlay = document.getElementById("composer-overlay");
+    const fabBtn = document.getElementById("fab-compose");
+    const btnCloseComposer = document.getElementById("btn-close-composer");
+    const btnPrevStep = document.getElementById("btn-prev-step");
+    const btnNextStep = document.getElementById("btn-next-step");
 
-    tabVoice.addEventListener("click", () => {
-      state.composerType = "voice";
-      tabVoice.classList.add("active");
-      tabText.classList.remove("active");
-      voiceArea.style.display = "block";
-      textArea.style.display = "none";
-      composerBadge.textContent = t("mode_voice");
+    const stepPanels = [
+      document.getElementById("step-panel-1"),
+      document.getElementById("step-panel-2"),
+      document.getElementById("step-panel-3"),
+      document.getElementById("step-panel-4")
+    ];
+    const stepperNodes = document.querySelectorAll(".wizard-step-node");
+
+    fabBtn.addEventListener("click", () => {
+      composerOverlay.classList.add("active");
+      updateComposerStep(1);
     });
 
-    tabText.addEventListener("click", () => {
+    btnCloseComposer.addEventListener("click", () => {
+      composerOverlay.classList.remove("active");
+    });
+
+    composerOverlay.addEventListener("click", (e) => {
+      if (e.target === composerOverlay) {
+        composerOverlay.classList.remove("active");
+      }
+    });
+
+    // Type choice in Step 1
+    const choiceVoice = document.getElementById("choice-voice");
+    const choiceText = document.getElementById("choice-text");
+    const voiceArea = document.getElementById("voice-composer-area");
+    const textArea = document.getElementById("text-composer-area");
+
+    choiceVoice.addEventListener("click", () => {
+      state.composerType = "voice";
+      choiceVoice.classList.add("selected");
+      choiceText.classList.remove("selected");
+      voiceArea.style.display = "block";
+      textArea.style.display = "none";
+    });
+
+    choiceText.addEventListener("click", () => {
       state.composerType = "text";
-      tabText.classList.add("active");
-      tabVoice.classList.remove("active");
+      choiceText.classList.add("selected");
+      choiceVoice.classList.remove("selected");
       voiceArea.style.display = "none";
       textArea.style.display = "block";
-      composerBadge.textContent = t("mode_text");
     });
 
     const textInput = document.getElementById("text-content-input");
@@ -2675,6 +2801,91 @@
       textCharCount.textContent = textInput.value.length;
     });
 
+    // Stepper node clicking
+    stepperNodes.forEach((node, idx) => {
+      node.addEventListener("click", () => {
+        updateComposerStep(idx + 1);
+      });
+    });
+
+    function updateComposerStep(step) {
+      state.composerStep = step;
+
+      stepPanels.forEach((panel, i) => {
+        panel.classList.toggle("active", i === step - 1);
+      });
+
+      stepperNodes.forEach((node, i) => {
+        node.classList.remove("active", "completed");
+        if (i + 1 === step) {
+          node.classList.add("active");
+        } else if (i + 1 < step) {
+          node.classList.add("completed");
+        }
+      });
+
+      btnPrevStep.disabled = step === 1;
+      btnNextStep.style.display = step === 4 ? "none" : "flex";
+
+      if (step === 4) {
+        renderStep4Review();
+      }
+    }
+
+    btnNextStep.addEventListener("click", () => {
+      if (state.composerStep < 4) {
+        updateComposerStep(state.composerStep + 1);
+      }
+    });
+
+    btnPrevStep.addEventListener("click", () => {
+      if (state.composerStep > 1) {
+        updateComposerStep(state.composerStep - 1);
+      }
+    });
+
+    function renderStep4Review() {
+      const container = document.getElementById("review-card-container");
+      const isVoice = state.composerType === "voice";
+      const emotionData = EMOTION_MAP[state.selectedEmotion] || EMOTION_MAP["calm"];
+      const emotionLabel = t("emotion_" + state.selectedEmotion);
+      const hideCountry = document.getElementById("hide-country-checkbox").checked;
+      const countryInfo = COUNTRY_COORDINATES[state.visitorCountry] || { name: state.visitorCountry };
+      const locationText = hideCountry ? t("deep_space_island") : countryInfo.name;
+
+      let previewSnippet = "";
+      if (isVoice) {
+        const caption = document.getElementById("voice-caption-input").value.trim();
+        previewSnippet = `${state.recordingDuration}s ${t("legend_voice")}${caption ? ' · "' + escapeHTML(caption) + '"' : ''}`;
+      } else {
+        const txt = textInput.value.trim();
+        previewSnippet = txt ? `"${escapeHTML(txt.slice(0, 60))}${txt.length > 60 ? '...' : ''}"` : '--';
+      }
+
+      container.innerHTML = `
+        <div class="review-row">
+          <span class="review-row-label">${t("review_type")}</span>
+          <span class="review-row-val">${isVoice ? t("tab_voice") : t("tab_text")}</span>
+        </div>
+        <div class="review-row">
+          <span class="review-row-label">${t("review_content")}</span>
+          <span class="review-row-val">${previewSnippet}</span>
+        </div>
+        <div class="review-row">
+          <span class="review-row-label">${t("review_mood")}</span>
+          <span class="review-row-val">
+            <span class="mood-chip-dot" style="background:${emotionData.color};"></span>
+            ${emotionLabel}
+          </span>
+        </div>
+        <div class="review-row">
+          <span class="review-row-label">${t("review_location")}</span>
+          <span class="review-row-val">${locationText}</span>
+        </div>
+      `;
+    }
+
+    // Submit Echo
     const btnSubmit = document.getElementById("btn-submit-echo");
     btnSubmit.addEventListener("click", async () => {
       const hideCountry = document.getElementById("hide-country-checkbox").checked;
@@ -2690,6 +2901,7 @@
       if (state.composerType === "voice") {
         if (!state.recordingBlob) {
           showToast("请先录制一段声音");
+          updateComposerStep(2);
           return;
         }
         formData.append("file", state.recordingBlob, `voice_${Date.now()}.webm`);
@@ -2699,6 +2911,7 @@
         const textVal = textInput.value.trim();
         if (!textVal) {
           showToast("请输入文字信笺内容");
+          updateComposerStep(2);
           return;
         }
         formData.append("content", textVal);
@@ -2724,6 +2937,8 @@
           recordTimer.textContent = "00:00";
           btnRerecord.style.display = "none";
           recordBtnText.textContent = t("btn_start_rec");
+
+          composerOverlay.classList.remove("active");
           loadEchoStream();
         } else {
           showToast(result.error || "发送失败");
@@ -2742,7 +2957,7 @@
     // ================= 5. 加载回声流与情绪天气 =================
     async function loadEchoStream() {
       const container = document.getElementById("echo-stream-container");
-      
+
       const params = new URLSearchParams();
       if (state.filterCountry !== "ALL") params.append("country", state.filterCountry);
       if (state.filterType !== "all") params.append("type", state.filterType);
@@ -2755,14 +2970,14 @@
         const data = await res.json();
 
         if (!data.success) {
-          container.innerHTML = `<div class="empty-state">${data.error}</div>`;
+          container.innerHTML = `<div class="stream-empty-prompt">${data.error}</div>`;
           return;
         }
 
         if (data.visitor_country) {
           state.visitorCountry = data.visitor_country;
           const diurnal = state.countryDayNightMap[data.visitor_country];
-          const sunIcon = diurnal ? (diurnal.isDay ? "昼" : "夜") : "";
+          const sunIcon = diurnal ? (diurnal.isDay ? t("day_status_tag") : t("night_status_tag")) : "";
           document.getElementById("my-country-badge").textContent = `${data.visitor_country} · ${sunIcon}`;
         }
 
@@ -2779,11 +2994,11 @@
         renderPosts(state.cachedPosts);
 
       } catch (err) {
-        container.innerHTML = `<div class="empty-state">网络连接失败，请稍后重试</div>`;
+        container.innerHTML = `<div class="stream-empty-prompt">网络连接失败，请稍后重试</div>`;
       }
     }
 
-    // 渲染世界情绪天气面板（低饱和静谧小圆点）
+    // 渲染世界情绪天气面板
     function renderMoodWeather(moodList) {
       const container = document.getElementById("mood-container");
       const summaryEl = document.getElementById("mood-summary");
@@ -2802,11 +3017,11 @@
         const item = EMOTION_MAP[key];
         const count = moodCounts[key] || 0;
         const chip = document.createElement("div");
-        chip.className = `mood-chip ${state.filterEmotion === key ? "active" : ""}`;
+        chip.className = `mood-chip-tag ${state.filterEmotion === key ? "active" : ""}`;
         chip.innerHTML = `
-          <span class="mood-dot" style="background: ${item.color};"></span>
+          <span class="mood-chip-dot" style="background: ${item.color};"></span>
           <span>${t("emotion_" + key)}</span>
-          <span class="mood-count">${count}</span>
+          <span class="mood-chip-num">${count}</span>
         `;
         chip.addEventListener("click", () => {
           if (state.filterEmotion === key) {
@@ -2821,10 +3036,10 @@
       });
     }
 
-    // 渲染卡片列表
+    // 4 & 5. 渲染卡片：情绪边框、悬浮微弱浸染、入场动画、大波形
     function renderPosts(posts) {
       const container = document.getElementById("echo-stream-container");
-      
+
       let filtered = (posts || []).filter(post => {
         if (state.filterCountry !== "ALL" && post.country_code !== state.filterCountry) {
           return false;
@@ -2840,69 +3055,85 @@
       });
 
       if (!filtered || filtered.length === 0) {
-        container.innerHTML = `<div class="empty-state">${t("empty_stream")}</div>`;
+        container.innerHTML = `<div class="stream-empty-prompt">${t("empty_stream")}</div>`;
         return;
       }
 
       container.innerHTML = "";
-      filtered.forEach(post => {
+      filtered.forEach((post, index) => {
         const card = document.createElement("div");
         const isVoice = post.content_type === "voice";
-        card.className = "echo-card";
-
-        const countryInfo = COUNTRY_COORDINATES[post.country_code] || { name: post.country_code };
         const emotionData = EMOTION_MAP[post.emotion] || EMOTION_MAP["calm"];
         const emotionLabel = t("emotion_" + post.emotion) || post.emotion;
         const isMyPost = post.user_id === state.userId;
         const timeAgo = formatTimeAgo(post.created_at);
 
+        card.className = "echo-card-item";
+        card.style.setProperty("--i", index);
+        card.style.borderLeftColor = emotionData.color;
+
+        // 4. Subtle background tint on hover toward emotion color
+        card.addEventListener("mouseenter", () => {
+          card.style.background = emotionData.bg;
+        });
+        card.addEventListener("mouseleave", () => {
+          card.style.background = "";
+        });
+
+        const countryInfo = COUNTRY_COORDINATES[post.country_code] || { name: post.country_code };
         const diurnal = state.countryDayNightMap[post.country_code] || { isDay: true, status: "day", localTimeStr: "--:--" };
+
         const solarBadgeHTML = post.country_code !== "UN" ? `
-          <span class="solar-status-tag ${diurnal.status}">
+          <span class="tag-solar ${diurnal.status}">
             <svg class="icon icon-sm" viewBox="0 0 24 24">
-              ${diurnal.isDay ? 
-                '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>' : 
+              ${diurnal.isDay ?
+                '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>' :
                 '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>'}
             </svg>
             <span>${diurnal.localTimeStr}</span>
           </span>
         ` : "";
 
+        // 4. Generate 24 varied waveform bars for larger visual display
+        const waveBars = Array.from({ length: 24 }, (_, i) => {
+          const h = 20 + Math.sin(i * 0.7) * 35 + Math.cos(i * 1.3) * 20 + (i % 3) * 8;
+          return `<span class="waveform-visual-bar" style="height: ${Math.max(15, Math.min(88, h))}%;"></span>`;
+        }).join("");
+
         let contentHTML = "";
         if (isVoice) {
           contentHTML = `
-            <div class="voice-player-bar" data-url="${post.media_url}">
-              <button class="btn-play-voice" title="播放声音">
+            <div class="voice-bar-player" data-url="${post.media_url}">
+              <button class="btn-voice-play" title="播放声音">
                 <svg class="icon icon-sm" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3" fill="currentColor"/></svg>
               </button>
-              <div class="voice-wave-container">
-                <span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span>
-                <span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span>
-                <span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span>
-                <span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span>
+              <div class="waveform-visual-container">
+                ${waveBars}
               </div>
-              <span class="voice-duration">${post.duration || 0}s</span>
+              <span class="voice-sec-label">${post.duration || 0}s</span>
             </div>
-            ${post.content ? `<div class="echo-card-content">${escapeHTML(post.content)}</div>` : ""}
+            ${post.content ? `<div class="echo-content-text">${escapeHTML(post.content)}</div>` : ""}
           `;
         } else {
-          contentHTML = `<div class="echo-card-content">${escapeHTML(post.content)}</div>`;
+          contentHTML = `<div class="echo-content-text">${escapeHTML(post.content)}</div>`;
         }
 
         card.innerHTML = `
-          <div class="echo-card-header">
-            <div class="author-info">
-              <div class="author-avatar">${(post.nickname || "E")[0].toUpperCase()}</div>
-              <div class="author-meta">
-                <span class="author-name">${escapeHTML(post.nickname)}</span>
-                <span class="post-time">${timeAgo}</span>
+          <div class="echo-meta-header">
+            <div class="echo-author-wrap">
+              <div class="echo-author-avatar" style="background: ${generateAvatarGradient(post.nickname)};">
+                ${(post.nickname || "E")[0].toUpperCase()}
+              </div>
+              <div class="echo-author-text">
+                <span class="echo-author-name">${escapeHTML(post.nickname)}</span>
+                <span class="echo-post-time">${timeAgo}</span>
               </div>
             </div>
-            <div class="badge-group">
-              <span class="country-tag">${countryInfo.name}</span>
+            <div class="echo-badge-row">
+              <span class="tag-country">${countryInfo.name}</span>
               ${solarBadgeHTML}
-              <span class="emotion-tag" style="background: ${emotionData.bg}; border-color: ${emotionData.border}; color: ${emotionData.color};">
-                <span class="mood-dot" style="background: ${emotionData.color};"></span>
+              <span class="tag-emotion" style="background: ${emotionData.bg}; border-color: ${emotionData.border}; color: ${emotionData.color};">
+                <span class="mood-chip-dot" style="background: ${emotionData.color};"></span>
                 ${emotionLabel}
               </span>
             </div>
@@ -2910,24 +3141,24 @@
 
           ${contentHTML}
 
-          <div class="echo-card-footer">
-            <div class="action-group">
-              <button class="btn-action btn-like" data-id="${post.id}">
+          <div class="echo-card-footer-row">
+            <div class="echo-actions-left">
+              <button class="action-btn-link btn-like" data-id="${post.id}">
                 <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
-                <span class="like-num">${post.likes_count || 0}</span>
+                <span class="like-counter">${post.likes_count || 0}</span>
               </button>
-              <button class="btn-action btn-comment" data-id="${post.id}">
+              <button class="action-btn-link btn-comment" data-id="${post.id}">
                 <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
                 <span>${post.comments_count || 0}</span>
               </button>
-              <button class="btn-action btn-report" data-id="${post.id}">
+              <button class="action-btn-link btn-report" data-id="${post.id}">
                 <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg>
                 <span>${t("btn_report")}</span>
               </button>
             </div>
             <div>
               ${isMyPost ? `
-                <button class="btn-action btn-del" data-id="${post.id}">
+                <button class="action-btn-link btn-danger-hover btn-del" data-id="${post.id}">
                   <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
                   <span>${t("btn_delete")}</span>
                 </button>
@@ -2937,9 +3168,9 @@
         `;
 
         if (isVoice && post.media_url) {
-          const playBtn = card.querySelector(".btn-play-voice");
-          const playerBar = card.querySelector(".voice-player-bar");
-          playBtn.addEventListener("click", () => handlePlayAudio(post.media_url, playBtn, playerBar));
+          const playBtn = card.querySelector(".btn-voice-play");
+          const playerBar = card.querySelector(".voice-bar-player");
+          playerBar.addEventListener("click", () => handlePlayAudio(post.media_url, playBtn, playerBar));
         }
 
         const likeBtn = card.querySelector(".btn-like");
@@ -2960,7 +3191,7 @@
       });
     }
 
-    // ================= 6. 交互逻辑：播放、点赞、删除 =================
+    // ================= 声音播放控制 =================
     function handlePlayAudio(url, btn, bar) {
       if (state.currentPlayingAudio) {
         state.currentPlayingAudio.audio.pause();
@@ -2977,7 +3208,7 @@
       bar.classList.add("playing");
       state.currentPlayingAudio = { audio, btn, bar, url };
 
-      audio.play().catch(e => {
+      audio.play().catch(() => {
         showToast("音频加载失败");
         btn.innerHTML = `<svg class="icon icon-sm" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3" fill="currentColor"/></svg>`;
         bar.classList.remove("playing");
@@ -2990,6 +3221,7 @@
       };
     }
 
+    // ================= 点赞与删除 =================
     async function handleLikePost(postId, btn) {
       try {
         const res = await fetch("/api/echo", {
@@ -3004,7 +3236,7 @@
         });
         const d = await res.json();
         if (d.success) {
-          btn.querySelector(".like-num").textContent = d.likes_count;
+          btn.querySelector(".like-counter").textContent = d.likes_count;
           if (d.liked) {
             btn.classList.add("liked");
           } else {
@@ -3020,7 +3252,7 @@
       if (!confirm("确定要永久销毁这条回声吗？若包含声音，将同步彻底清除。")) return;
 
       try {
-        const res = await fetch(`/api/echo?id=${postId}&user_id=${state.userId}&token=${state.token}`, {
+        const res = await fetch(`/api/echo?id=${postId}`, {
           method: "DELETE",
           headers: {
             "x-user-id": state.userId,
@@ -3039,14 +3271,14 @@
       }
     }
 
-    // ================= 7. 评论回复弹窗 =================
+    // ================= 评论回复弹窗 =================
     const commentModal = document.getElementById("comment-modal");
     const commentInput = document.getElementById("comment-input");
     const btnSubmitComment = document.getElementById("btn-submit-comment");
 
     function openCommentModal(post) {
       state.commentingPostId = post.id;
-      document.getElementById("comment-original-quote").textContent = 
+      document.getElementById("comment-original-quote").textContent =
         `"${(post.content || '声音回声').slice(0, 80)}..." — ${post.nickname}`;
       commentInput.value = "";
       commentModal.classList.add("active");
@@ -3065,8 +3297,8 @@
         const d = await res.json();
         if (d.success && d.comments && d.comments.length > 0) {
           container.innerHTML = d.comments.map(c => `
-            <div class="comment-item">
-              <div class="comment-item-header">
+            <div class="comment-bubble">
+              <div class="comment-meta-row">
                 <span style="color: var(--text-muted); font-weight: 500;">${escapeHTML(c.nickname)} (${c.country_code})</span>
                 <span>${formatTimeAgo(c.created_at)}</span>
               </div>
@@ -3115,7 +3347,7 @@
       }
     });
 
-    // ================= 8. 举报弹窗 =================
+    // ================= 举报弹窗 (14. Translated values) =================
     const reportModal = document.getElementById("report-modal");
     function openReportModal(postId) {
       state.reportingPostId = postId;
@@ -3127,7 +3359,8 @@
     });
 
     document.getElementById("btn-confirm-report").addEventListener("click", async () => {
-      const selectVal = document.getElementById("report-reason-select").value;
+      const selectEl = document.getElementById("report-reason-select");
+      const selectVal = t(selectEl.value);
       const detailVal = document.getElementById("report-reason-detail").value.trim();
       const reason = detailVal ? `${selectVal}: ${detailVal}` : selectVal;
 
@@ -3155,7 +3388,7 @@
       }
     });
 
-    // ================= 9. 匿名凭据导入导出 =================
+    // ================= 匿名身份管理弹窗 =================
     const identityModal = document.getElementById("identity-modal");
     document.getElementById("identity-btn").addEventListener("click", () => {
       document.getElementById("input-nickname").value = state.nickname;
@@ -3199,19 +3432,19 @@
       }
     });
 
-    // ================= 10. 筛选与监听 =================
-    document.querySelectorAll(".filter-btn[data-type]").forEach(btn => {
+    // ================= 过滤与排序监听 =================
+    document.querySelectorAll(".filter-pill-btn[data-type]").forEach(btn => {
       btn.addEventListener("click", () => {
-        document.querySelectorAll(".filter-btn[data-type]").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".filter-pill-btn[data-type]").forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
         state.filterType = btn.dataset.type;
         loadEchoStream();
       });
     });
 
-    document.querySelectorAll(".filter-btn[data-sort]").forEach(btn => {
+    document.querySelectorAll(".filter-pill-btn[data-sort]").forEach(btn => {
       btn.addEventListener("click", () => {
-        document.querySelectorAll(".filter-btn[data-sort]").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".filter-pill-btn[data-sort]").forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
         state.filterSort = btn.dataset.sort;
         loadEchoStream();
@@ -3260,24 +3493,7 @@
       showToast("已刷新");
     });
 
-    // 工具函数
-    function escapeHTML(str) {
-      if (!str) return "";
-      return str.replace(/[&<>'"]/g, 
-        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
-    }
-
-    function formatTimeAgo(dateStr) {
-      if (!dateStr) return t("just_now");
-      const past = new Date(dateStr.endsWith("Z") ? dateStr : dateStr + "Z").getTime();
-      const diffSecs = Math.max(0, Math.floor((Date.now() - past) / 1000));
-      if (diffSecs < 60) return t("just_now");
-      if (diffSecs < 3600) return `${Math.floor(diffSecs / 60)} ${t("mins_ago")}`;
-      if (diffSecs < 86400) return `${Math.floor(diffSecs / 3600)} ${t("hours_ago")}`;
-      return `${Math.floor(diffSecs / 86400)} ${t("days_ago")}`;
-    }
-
-    // 页面初始化
+    // ================= 页面初始化 =================
     window.addEventListener("DOMContentLoaded", () => {
       initLanguage();
       initIdentity();
