@@ -3,6 +3,64 @@
  * Cloudflare Pages Functions: /api/echo
  */
 
+// 自定义校验错误类（携带 HTTP 状态码）
+class ValidationError extends Error {
+  constructor(message, status = 400) {
+    super(message);
+    this.name = "ValidationError";
+    this.status = status;
+    this.isValidation = true;
+  }
+}
+
+// 内存访问限流池（每个 IP 每分钟最多 10 次 POST）
+const postRateLimitMap = new Map();
+
+function checkRateLimit(clientIp) {
+  const now = Date.now();
+  const entry = postRateLimitMap.get(clientIp);
+
+  if (!entry || now > entry.resetTime) {
+    // 内存过大时清理已过期的 key
+    if (postRateLimitMap.size > 5000) {
+      for (const [ip, item] of postRateLimitMap.entries()) {
+        if (now > item.resetTime) {
+          postRateLimitMap.delete(ip);
+        }
+      }
+    }
+    postRateLimitMap.set(clientIp, { count: 1, resetTime: now + 60000 });
+    return true;
+  }
+
+  if (entry.count >= 10) {
+    return false;
+  }
+
+  entry.count += 1;
+  return true;
+}
+
+// 恒定时间字符串比较（防止时序侧信道攻击）
+function timingSafeEqual(a, b) {
+  if (typeof a !== "string" || typeof b !== "string") return false;
+  const encoder = new TextEncoder();
+  const bufA = encoder.encode(a);
+  const bufB = encoder.encode(b);
+
+  const lenA = bufA.length;
+  const lenB = bufB.length;
+  const maxLen = Math.max(lenA, lenB);
+
+  let diff = lenA ^ lenB;
+  for (let i = 0; i < maxLen; i++) {
+    const byteA = i < lenA ? bufA[i] : 0;
+    const byteB = i < lenB ? bufB[i] : 0;
+    diff |= (byteA ^ byteB);
+  }
+  return diff === 0;
+}
+
 // 允许跨域请求头辅助函数
 function corsHeaders() {
   return {
@@ -43,13 +101,14 @@ async function hashToken(token) {
 function getVisitorCountry(request, hideCountry = false) {
   if (hideCountry) return "UN";
   const cfCountry = request.cf?.country || request.headers.get("CF-IPCountry") || "UN";
-  return cfCountry.toUpperCase();
+  const upper = cfCountry.toUpperCase();
+  return /^[A-Z]{2}$/.test(upper) ? upper : "UN";
 }
 
 // 验证/渐进式创建用户身份
 async function authenticateUser(db, userId, token, nickname = "") {
   if (!userId || !token) {
-    throw new Error("Missing user_id or token");
+    throw new ValidationError("Missing user_id or token", 400);
   }
   const tokenHash = await hashToken(token);
   
@@ -67,11 +126,11 @@ async function authenticateUser(db, userId, token, nickname = "") {
 
   // 校验 Token Hash
   if (existingUser.token_hash !== tokenHash) {
-    throw new Error("Invalid token authentication");
+    throw new ValidationError("Invalid token authentication", 401);
   }
 
   if (existingUser.status === "banned") {
-    throw new Error("Account has been banned");
+    throw new ValidationError("Account has been banned", 403);
   }
 
   // 如果传了新昵称，则同步更新
@@ -167,10 +226,11 @@ async function deleteFromGitHub(env, mediaKey) {
   }
 }
 
-// 检查是否具备管理员权限
+// 检查是否具备管理员权限（恒定时间比较）
 function isAdmin(request, env) {
   const adminPassHeader = request.headers.get("x-admin-password");
-  return Boolean(env.ADMIN_PASSWORD && adminPassHeader && adminPassHeader === env.ADMIN_PASSWORD);
+  if (!env.ADMIN_PASSWORD || !adminPassHeader) return false;
+  return timingSafeEqual(adminPassHeader, env.ADMIN_PASSWORD);
 }
 
 // ArrayBuffer 转 Base64 辅助函数
@@ -203,10 +263,24 @@ export async function onRequestGet(context) {
   }
 
   const url = new URL(request.url);
-  const countryParam = url.searchParams.get("country");
+
+  // 输入校验与白名单机制
+  const rawCountry = url.searchParams.get("country");
+  let countryParam = null;
+  if (rawCountry && rawCountry !== "ALL") {
+    const upper = rawCountry.toUpperCase();
+    if (/^[A-Z]{2}$/.test(upper)) {
+      countryParam = upper;
+    }
+  }
+
   const emotionParam = url.searchParams.get("emotion");
   const typeParam = url.searchParams.get("type");
-  const sortParam = url.searchParams.get("sort") || "latest"; // latest, popular, random
+
+  const rawSort = url.searchParams.get("sort");
+  const allowedSorts = ["latest", "popular", "random"];
+  const sortParam = allowedSorts.includes(rawSort) ? rawSort : "latest";
+
   const postIdParam = url.searchParams.get("post_id");
   const adminParam = url.searchParams.get("admin") === "1" || url.searchParams.get("admin") === "true";
   const limit = Math.min(Math.max(parseInt(url.searchParams.get("limit") || "30", 10), 1), 100);
@@ -257,12 +331,15 @@ export async function onRequestGet(context) {
     }
 
     if (postIdParam) {
-      whereClauses.push("id = ?");
-      queryBindings.push(parseInt(postIdParam, 10));
+      const parsedId = parseInt(postIdParam, 10);
+      if (!isNaN(parsedId)) {
+        whereClauses.push("id = ?");
+        queryBindings.push(parsedId);
+      }
     } else {
-      if (countryParam && countryParam !== "ALL") {
+      if (countryParam) {
         whereClauses.push("country_code = ?");
-        queryBindings.push(countryParam.toUpperCase());
+        queryBindings.push(countryParam);
       }
       if (emotionParam && emotionParam !== "all") {
         whereClauses.push("emotion = ?");
@@ -275,6 +352,11 @@ export async function onRequestGet(context) {
     }
 
     const whereSQL = whereClauses.length > 0 ? `WHERE ${whereClauses.join(" AND ")}` : "";
+
+    // 分页总数查询（使用相同的过滤条件）
+    const countSQL = `SELECT COUNT(*) as total FROM posts ${whereSQL}`;
+    const countResult = await db.prepare(countSQL).bind(...queryBindings).first();
+    const totalCount = countResult?.total || 0;
 
     let orderSQL = "ORDER BY id DESC";
     if (sortParam === "popular") {
@@ -328,13 +410,14 @@ export async function onRequestGet(context) {
       visitor_country: visitorCountry,
       countries: countriesResult.results || [],
       moods: moodsResult.results || [],
+      total_count: totalCount,
       posts: postsResult.results || [],
       comments: comments,
       admin_stats: adminStats,
     });
   } catch (err) {
     console.error("GET /api/echo error:", err);
-    return errorResponse(`Failed to fetch echo data: ${err.message}`, 500);
+    return errorResponse("An internal error occurred", 500);
   }
 }
 
@@ -344,6 +427,12 @@ export async function onRequestPost(context) {
   const db = env.DB;
   if (!db) {
     return errorResponse("Database binding 'DB' is not configured in Cloudflare Pages", 500);
+  }
+
+  // 1. IP 访问频率限制（每 IP 每分钟最大 10 次 POST）
+  const clientIp = request.headers.get("CF-Connecting-IP") || "unknown";
+  if (!checkRateLimit(clientIp)) {
+    return errorResponse("Too Many Requests: Rate limit exceeded. Max 10 requests per minute.", 429);
   }
 
   try {
@@ -549,7 +638,10 @@ export async function onRequestPost(context) {
     return errorResponse(`Unknown action: ${action}`);
   } catch (err) {
     console.error("POST /api/echo error:", err);
-    return errorResponse(err.message || "Internal server error", 500);
+    if (err && err.isValidation) {
+      return errorResponse(err.message, err.status || 400);
+    }
+    return errorResponse("An internal error occurred", 500);
   }
 }
 
@@ -573,13 +665,13 @@ export async function onRequestDelete(context) {
       return errorResponse("Post not found", 404);
     }
 
-    // 校验权限：是管理员，或是原作者
+    // 校验权限：是管理员，或是原作者（仅接受来自请求头的身份凭证）
     const adminAuth = isAdmin(request, env);
     let authorAuth = false;
 
     if (!adminAuth) {
-      const userId = request.headers.get("x-user-id") || url.searchParams.get("user_id");
-      const userToken = request.headers.get("x-user-token") || url.searchParams.get("token");
+      const userId = request.headers.get("x-user-id");
+      const userToken = request.headers.get("x-user-token");
       if (userId && userToken && post.user_id === userId) {
         const tokenHash = await hashToken(userToken);
         const user = await db.prepare("SELECT token_hash FROM users WHERE id = ?").bind(userId).first();
@@ -610,6 +702,6 @@ export async function onRequestDelete(context) {
     });
   } catch (err) {
     console.error("DELETE /api/echo error:", err);
-    return errorResponse(`Failed to delete echo: ${err.message}`, 500);
+    return errorResponse("An internal error occurred", 500);
   }
 }
