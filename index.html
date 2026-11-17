@@ -26,6 +26,7 @@
 
   <style>
     :root {
+      color-scheme: dark;
       /* 深夜天文台极简静谧色谱 */
       --bg-space: #0B0F19;
       --bg-surface: rgba(17, 24, 39, 0.65);
@@ -163,23 +164,9 @@
     }
     #globe-container:active { cursor: grabbing; }
 
-    /* Hero centered floating title */
+    /* Hero centered floating title (Hidden to preserve unobstructed view of the 3D globe) */
     .hero-floating-card {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
-      text-align: center;
-      z-index: 10;
-      animation: heroFloatIn 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-      padding: 1.5rem 2.5rem;
-      border-radius: var(--radius-lg);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      background: rgba(11, 15, 25, 0.35);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+      display: none !important;
     }
 
     .hero-brand-title {
@@ -303,19 +290,22 @@
     .legend-dot.sun { background: var(--accent-sun); }
     .legend-divider { width: 1px; height: 10px; background: rgba(255, 255, 255, 0.1); }
 
-    /* Globe Toolbar Bottom-Right */
+    /* Globe Toolbar Right-Center (Vertical Observatory Dock, completely avoids FAB collision) */
     .globe-toolbar-wrap {
       position: absolute;
-      bottom: 1.5rem;
+      top: 50%;
       right: 1.75rem;
+      transform: translateY(-50%);
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 0.25rem;
-      background: rgba(15, 23, 42, 0.65);
+      gap: 0.35rem;
+      background: rgba(15, 23, 42, 0.7);
       backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-full);
-      padding: 0.25rem;
+      padding: 0.4rem 0.25rem;
       z-index: 20;
       box-shadow: var(--shadow-soft);
     }
@@ -323,8 +313,8 @@
       background: transparent;
       border: none;
       color: var(--text-dim);
-      width: 34px;
-      height: 34px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -333,23 +323,43 @@
       transition: all 0.2s ease;
     }
     .tool-btn:hover { background: var(--bg-surface-hover); color: var(--text-main); }
-    .tool-divider { width: 1px; height: 16px; background: rgba(255, 255, 255, 0.08); margin: 0 2px; }
+    .tool-divider { width: 16px; height: 1px; background: rgba(255, 255, 255, 0.08); margin: 2px 0; }
 
-    /* ================= 2. STICKY HEADER & CONTENT ON SCROLL ================= */
+    /* ================= 2. FIXED TOP HEADER (Seamless Glassmorphism) ================= */
     .site-header {
-      position: sticky;
+      position: fixed;
       top: 0;
+      left: 0;
+      right: 0;
       z-index: 100;
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
-      background: rgba(11, 15, 25, 0.85);
+      background: rgba(11, 15, 25, 0.75);
       border-bottom: 1px solid var(--border-subtle);
-      padding: 0.8rem 2rem;
+      padding: 0.75rem 2rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 1.25rem;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .day-night-toggle-group {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
     }
 
     .brand-link {
@@ -376,21 +386,51 @@
     .header-right { display: flex; align-items: center; gap: 0.75rem; }
 
     .lang-dropdown {
-      background: rgba(255, 255, 255, 0.03);
+      color-scheme: dark;
+      background-color: #0F172A;
+      background: rgba(15, 23, 42, 0.85);
       border: 1px solid var(--border-subtle);
-      color: var(--text-muted);
-      padding: 0.35rem 0.75rem;
+      color: var(--text-main);
+      padding: 0.38rem 2rem 0.38rem 0.85rem;
       border-radius: var(--radius-full);
       font-size: var(--font-caption);
       font-family: inherit;
       outline: none;
       cursor: pointer;
       transition: all 0.2s ease;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
     }
     .lang-dropdown:hover, .lang-dropdown:focus {
-      background: var(--bg-surface-hover);
+      background-color: #1E293B;
       border-color: var(--border-hover);
-      color: var(--text-main);
+      color: #FFFFFF;
+    }
+
+    /* 核心修复：彻底解决 Windows/Chrome 下拉项白底白字、看不清文字的问题 */
+    .lang-dropdown option,
+    select option {
+      color-scheme: dark;
+      background-color: #0F172A !important;
+      color: #F8FAFC !important;
+      padding: 10px 14px !important;
+      font-size: 0.85rem !important;
+      line-height: 1.5 !important;
+    }
+    .lang-dropdown option:checked,
+    select option:checked {
+      background-color: #1E293B !important;
+      color: #7DD3FC !important;
+      font-weight: 500 !important;
+    }
+    .lang-dropdown option:hover,
+    select option:hover {
+      background-color: #334155 !important;
+      color: #FFFFFF !important;
     }
 
     .identity-pill-btn {
@@ -1261,22 +1301,26 @@
       .observatory-sidebar { order: 2; }
     }
 
+    @media (max-width: 900px) {
+      .header-solar-capsule { display: none; }
+      .brand-meta p { display: none; }
+      .site-header { padding: 0.65rem 1.2rem; }
+    }
+
     /* Mobile: <768px */
     @media (max-width: 768px) {
       .hero-section {
         height: 60vh;
-        min-height: 420px;
+        min-height: 400px;
       }
-      .hero-brand-title { font-size: 1.75rem; letter-spacing: 0.12em; }
-      .hero-brand-sub { font-size: 0.88rem; }
-      .hero-floating-card { padding: 1.2rem 1.5rem; width: 88%; }
-      .hero-pill-bar { left: 0.75rem; right: 0.75rem; top: 0.75rem; }
       .globe-legend-wrap { left: 0.75rem; bottom: 0.75rem; padding: 0.25rem 0.65rem; }
-      .globe-toolbar-wrap { right: 0.75rem; bottom: 0.75rem; }
+      .globe-toolbar-wrap { right: 0.75rem; top: 50%; transform: translateY(-50%); }
       .scroll-indicator-wrap { bottom: 1.25rem; }
-      .site-header { padding: 0.65rem 1rem; }
+      .site-header { padding: 0.6rem 0.85rem; }
       .main-grid { padding: 1.5rem 0.85rem; }
       .fab-button { bottom: 1.25rem; right: 1.25rem; width: 50px; height: 50px; }
+      .day-night-toggle-group .dn-count { display: none; }
+      .identity-pill-btn #my-country-badge { display: none; }
 
       /* Composer full-screen on mobile */
       .sheet-modal {
@@ -1290,26 +1334,27 @@
 </head>
 <body>
 
-  <!-- ================= 1. IMMERSIVE HERO LANDING (100vh) ================= -->
-  <section class="hero-section" id="hero-section">
-    <div id="globe-container"></div>
-
-    <!-- Centered Brand Overlay Floating over the Globe -->
-    <div class="hero-floating-card">
-      <h1 class="hero-brand-title" data-i18n="site_title">WORLD ECHO</h1>
-      <p class="hero-brand-sub" data-i18n="site_subtitle">世界回声 · 静谧之境</p>
+  <!-- ================= TOP NAVIGATION HEADER (Fixed, Non-obstructive) ================= -->
+  <header class="site-header" id="site-header">
+    <div class="header-left">
+      <a href="#hero-section" class="brand-link" onclick="window.scrollTo({top:0, behavior:'smooth'}); return false;">
+        <div class="brand-icon-box">
+          <svg class="icon icon-lg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+        </div>
+        <div class="brand-meta">
+          <h1 data-i18n="site_title">WORLD ECHO</h1>
+          <p data-i18n="site_subtitle">世界回声 · 静谧之境</p>
+        </div>
+      </a>
+      <div class="pill-capsule header-solar-capsule">
+        <svg class="icon icon-sm" style="color: var(--accent-sun);" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+        <span data-i18n="sun_subsolar">太阳直射</span>
+        <span class="subsolar-coord" id="solar-subsolar-display">--</span>
+      </div>
     </div>
 
-    <!-- Floating day/night shader pills -->
-    <div class="hero-pill-bar">
-      <div class="hero-pill-left">
-        <div class="pill-capsule">
-          <svg class="icon icon-sm" style="color: var(--accent-sun);" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-          <span data-i18n="sun_subsolar">太阳直射</span>
-          <span class="subsolar-coord" id="solar-subsolar-display">--</span>
-        </div>
-      </div>
-      <div class="hero-pill-right">
+    <div class="header-right">
+      <div class="day-night-toggle-group">
         <button class="pill-capsule interactive active" data-dn="all" id="dn-filter-all" data-i18n="filter_all_time">全球时空</button>
         <button class="pill-capsule interactive" data-dn="day" id="dn-filter-day">
           <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
@@ -1322,7 +1367,32 @@
           <span class="dn-count" id="night-country-count">0</span>
         </button>
       </div>
+
+      <select id="lang-select" class="lang-dropdown" title="Language">
+        <option value="zh">简体中文</option>
+        <option value="en">English</option>
+        <option value="ja">日本語</option>
+        <option value="ko">한국어</option>
+        <option value="es">Español</option>
+        <option value="fr">Français</option>
+        <option value="de">Deutsch</option>
+        <option value="ru">Русский</option>
+        <option value="ar">العربية</option>
+      </select>
+
+      <div class="identity-pill-btn" id="identity-btn">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span id="current-nickname-display">探索者</span>
+        <span id="my-country-badge" style="opacity: 0.65; font-size: 0.7rem;">...</span>
+      </div>
     </div>
+  </header>
+
+  <!-- ================= 1. IMMERSIVE HERO LANDING (100vh) ================= -->
+  <section class="hero-section" id="hero-section">
+    <div id="globe-container"></div>
+
+    <!-- 已经彻底移除原先挡在地球正中央的大 Logo 卡片，还 3D 地球以完整的纯净全貌 -->
 
     <!-- Globe Legend Bottom-Left -->
     <div class="globe-legend-wrap">
@@ -1333,7 +1403,7 @@
       <span class="legend-item"><span class="legend-dot sun"></span><span data-i18n="legend_sun">晨昏光影</span></span>
     </div>
 
-    <!-- Globe Controls Bottom-Right -->
+    <!-- Globe Controls Right-Center (垂直天文台操作坞，与右下角 FAB 按钮完全错开) -->
     <div class="globe-toolbar-wrap">
       <button class="tool-btn" id="btn-toggle-spin" title="切换地球自转">
         <svg class="icon" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
@@ -1360,37 +1430,6 @@
 
   <!-- Scroll Anchor -->
   <div id="content-anchor" class="content-anchor"></div>
-
-  <!-- ================= STICKY HEADER (Appears on scroll) ================= -->
-  <header class="site-header" id="site-header">
-    <a href="#hero-section" class="brand-link" onclick="window.scrollTo({top:0, behavior:'smooth'}); return false;">
-      <div class="brand-icon-box">
-        <svg class="icon icon-lg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
-      </div>
-      <div class="brand-meta">
-        <h1 data-i18n="site_title">WORLD ECHO</h1>
-        <p data-i18n="site_subtitle">世界回声 · 静谧之境</p>
-      </div>
-    </a>
-    <div class="header-right">
-      <select id="lang-select" class="lang-dropdown" title="Language">
-        <option value="zh">简体中文</option>
-        <option value="en">English</option>
-        <option value="ja">日本語</option>
-        <option value="ko">한국어</option>
-        <option value="es">Español</option>
-        <option value="fr">Français</option>
-        <option value="de">Deutsch</option>
-        <option value="ru">Русский</option>
-        <option value="ar">العربية</option>
-      </select>
-      <div class="identity-pill-btn" id="identity-btn">
-        <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        <span id="current-nickname-display">探索者</span>
-        <span id="my-country-badge" style="opacity: 0.65; font-size: 0.7rem;">...</span>
-      </div>
-    </div>
-  </header>
 
   <!-- ================= 2. MAIN CONTENT (Generous Whitespace & Breathing Room) ================= -->
   <main class="main-grid">
